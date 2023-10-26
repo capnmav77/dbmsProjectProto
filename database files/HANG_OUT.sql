@@ -116,17 +116,25 @@ SELECT check_password('Ramesh', 'bananas123');
 DELIMITER $$
 CREATE PROCEDURE get_user_groups(IN user_name VARCHAR(10))
 BEGIN
-	select ho_group_id as Groupid , ho_group_name as Groupname
-    from ho_group join user_groups on ho_group.ho_group_id = user_groups.group_id
-    where user_groups.member_name = user_name ;
+    SELECT group_id FROM user_groups WHERE member_name = user_name;
 END
 $$
 DELIMITER ;
 
-drop procedure get_user_groups;
-
 call get_user_groups('Ramesh');
 
+-- in order to get more information :
+DELIMITER $$
+CREATE PROCEDURE get_user_groups_fullinfo(IN user_name VARCHAR(10))
+BEGIN
+    SELECT *
+    FROM user_groups 
+    JOIN ho_group ON user_groups.group_id = ho_group.ho_group_id 
+    WHERE user_groups.member_name = user_name;
+END
+$$
+DELIMITER ;
 
+call get_user_groups_fullinfo('Ramesh');
 
 
