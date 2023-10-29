@@ -67,8 +67,6 @@ def get_group_events(group_id):
 
 
 
-
-
 # Check if the user is logged in
 if 'Username' not in st.session_state:
     st.session_state["Username"] = ""

@@ -27,6 +27,7 @@ def display_group_details(group_details):
     # st.text("Group ID: " + str(group_details[0]))
     # st.text("Group Description: " + group_details[2])
 
+
 def get_group_details(group_id):
     connection = connect_to_database()
     cursor = connection.cursor()
