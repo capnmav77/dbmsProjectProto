@@ -50,6 +50,7 @@ def display_group_requests(request):
             connection = connect_to_database()
             cursor = connection.cursor()
             cursor.execute(f"CALL accept_group_request('{reqGroup}','{reqUser}');")
+            response  = cursor.fetchall()
             connection.commit()
             cursor.close()
             st.text('Accepted Request')
@@ -101,7 +102,7 @@ if User1 != "":
     cursor = connection.cursor()
     cursor.execute(f"call get_admin_groups('{User1}')")
     result = cursor.fetchall()
-
+    cursor.close()
     #creating a dropdown menu for the user to select a group
     group_names = [group[1] for group in result]
     

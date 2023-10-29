@@ -117,7 +117,7 @@ insert into group_requests values('G00002','Zero');
 insert into group_requests values('G00004','Zero');
 insert into group_requests values('G00004','Ramesh');
 select * from group_requests;
--- DELETE FROM group_requests WHERE group_id = 'G00002' AND username = 'Bharath';
+DELETE FROM group_requests WHERE group_id = 'G00002' AND username = 'Ramesh';
 
 
 -- Functions 
@@ -156,6 +156,23 @@ $$
 DELIMITER ;
 #select check_isprouser('Ramesh');
 
+DELIMITER $$
+CREATE FUNCTION check_group_exists(in_group_id varchar(10))
+RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+    DECLARE groupcount int ;
+    SELECT count(*) INTO groupcount 
+    FROM ho_group
+    WHERE ho_group_id = in_group_id;
+    IF groupcount = 1 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
+END
+$$
+DELIMITER ;
+#select check_group_exists('G00001');
 
 
 -- Procedures
@@ -177,6 +194,10 @@ BEGIN
         
         DELETE FROM group_requests
         WHERE group_id = in_group_id AND username = in_username;
+        
+        update ho_group 
+        set pending_requests = pending_requests - 1
+        where ho_group_id = in_group_id;
 
         SELECT 'Request Processed Successfully' AS Result;
     ELSE
@@ -252,6 +273,40 @@ DELIMITER ;
 #call get_group_requests('G00004');
 
 
+DELIMITER $$ 
+CREATE PROCEDURE add_group_requests(IN in_group_id VARCHAR(10),IN in_username varchar(20))
+BEGIN 
+	declare user_exists int;
+    declare request_exists int;
+    
+    select count(*) into user_exists
+    from user_groups
+    where username = in_username and group_id = in_group_id;
+    
+    SELECT COUNT(*) INTO request_exists 
+    FROM group_requests
+    WHERE group_id = in_group_id AND username = in_username;
+    
+    IF user_exists = 1 or request_exists = 1 THEN
+		SELECT 'user already in group or request is pending ' AS Result;
+	ELSE
+		insert into group_requests values(in_group_id,in_username);
+        
+		update ho_group 
+		set pending_requests = pending_requests + 1
+		WHERE ho_group_id = in_group_id;
+        
+        SELECT 'user request added ';
+	end if;	
+END 
+$$ 
+DELIMITER ;
+drop procedure add_group_requests;
+-- call add_group_requests('G00001','Zero');
+-- select * from group_requests;
+-- select * from group_requests;
+-- select * from user_groups;
+-- call add_group_requests('G00003','Bharath');
 
 
 -- Triggers 
