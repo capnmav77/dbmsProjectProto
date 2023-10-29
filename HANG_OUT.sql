@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS hang_out;
 USE hang_out;
 
 create table users(
-    username varchar(10) not null unique, 
+    username varchar(20) not null unique, 
     email_id varchar(30) not null unique, 
     street VARCHAR(30),
     city VARCHAR(30),
@@ -15,29 +15,36 @@ create table users(
     PRIMARY KEY (username)
 );
 insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
+insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
+insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
 
 create table interests(
     interest_id varchar(10) not null unique,
-    interest_name varchar(10) not null,
+    interest_name varchar(20) not null,
     interest_desc varchar(50),
     primary key (interest_id)
 );
-drop table interests;
+-- drop table interests;
 insert into interests values('I001','general','a general place to visit');
+insert into interests values('I002','concerts','concerts to party into ');
 
 create table ho_group(
-	ho_group_id varchar(10) not null, 
-    ho_group_name varchar(10) not null, 
+	ho_group_id varchar(10) not null unique, 
+    ho_group_name varchar(20) not null, 
     ho_group_desc varchar(50) , 
-    admin_name varchar(10) not null , 
+    admin_name varchar(20) not null , 
     date_created date, 
     member_count int default 1 not null,
     previously_visited_loc varchar(10),
+    pending_requests int default 0 not null ,
     primary key (ho_group_id),
-    foreign key (admin_name ) references users(username)
+    foreign key (admin_name) references users(username)
 );
-
-insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null);
+-- select * from ho_group;
+insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
+insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
+insert into ho_group values('G00003','TG-3','just another test group','Ramesh', '2023-10-23', 1,null,0);
+insert into ho_group values('G00004','TG-4','just another test group','Bharath', '2023-10-23', 1,null,0);
     
 create table vis_locations(
 	location_name varchar(20) not null unique, 
@@ -52,8 +59,8 @@ create table vis_locations(
     primary key (location_name),
 	foreign key (location_type) references interests(interest_id) on update cascade 
 );
-
 insert into vis_locations values('Rameshs_house','I001', 'your','fav','home', 'rameshwar77411@gmail.com','its a friendly neighbourhood home' , 5,null);
+insert into vis_locations values('Spain','I002', 'your','fav','country', 'spain@gmail.com','its spain !' , 5, null);
 
 create table planned_event(
 	event_id varchar(10) not null, 
@@ -63,26 +70,31 @@ create table planned_event(
 	event_date date,
     event_time time,
     event_desc varchar(50),
-    pollx int default 0 not null, 
-    change_location int default 0 not null, 
+    pollx int default 0 not null,  
     primary key (event_id,group_id), 
     foreign key (location_name) references vis_locations(location_name) on delete cascade,
     foreign key (group_id) references ho_group(ho_group_id) on delete CASCADE
 );
+insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
+insert into planned_event values('E00001','COACHELLA','G00004','Spain','2023-10-23','00:00:00','a huge concert to party',0);
+
 
 create table user_groups(
-	member_name varchar(10) not null, 
+	username varchar(20) not null, 
     group_id varchar(10) not null,
     date_joined date,
-    is_admin bool default false,
-    primary key (member_name,group_id),
-    foreign key (member_name) references users(username) on delete cascade,
+    primary key (username,group_id),
+    foreign key (username) references users(username) on delete cascade,
     foreign key (group_id) references ho_group(ho_group_id) on delete cascade 
 );
-insert into user_groups values('Ramesh','G00001','2023-10-23',true);
+select * from user_groups;
+insert into user_groups values('Ramesh','G00001','2023-10-23');
+insert into user_groups values('Ramesh','G00002','2023-10-23');
+insert into user_groups values('Ramesh','G00003','2023-10-23');
+insert into user_groups values('Bharath','G00004','2023-10-23');
+-- DELETE FROM user_groups WHERE group_id = 'G00002' AND member_name = 'Bharath';
+-- DELETE FROM user_groups WHERE group_id = 'G00002' AND member_name = 'Zero';
 
-
-    
 create table group_interests(
 	group_id varchar(10) not NULL, 
     interest_id varchar(10) not NULL default 'I001', 
@@ -91,12 +103,28 @@ create table group_interests(
     foreign key (interest_id) references interests(interest_id) on delete cascade
 );
 insert into group_interests values('G00001','I001');
-    
 
 
--- a function to check if the corresponding username's password matches the given password and return a authorise or unauthorise response
+create table group_requests(
+	group_id varchar(10) not null,
+    username varchar(20) not null,
+    primary key (group_id,username),
+    foreign key (group_id) references ho_group(ho_group_id) on delete cascade,
+    foreign key (username) references users(username) on delete cascade
+);
+insert into group_requests values('G00002','Bharath');
+insert into group_requests values('G00002','Zero');
+insert into group_requests values('G00004','Zero');
+insert into group_requests values('G00004','Ramesh');
+select * from group_requests;
+-- DELETE FROM group_requests WHERE group_id = 'G00002' AND username = 'Bharath';
+
+
+-- Functions 
+
+-- a function to check if the corresponding username's password matches the given password and return a authorise or unauthorise response :
 DELIMITER $$
-CREATE FUNCTION check_password(in_username VARCHAR(10), in_password VARCHAR(20))
+CREATE FUNCTION check_password(in_username VARCHAR(20), in_password VARCHAR(20))
 RETURNS BOOLEAN DETERMINISTIC
 BEGIN
     DECLARE user_password VARCHAR(20);
@@ -109,24 +137,149 @@ BEGIN
 END
 $$
 DELIMITER ;
+#SELECT check_password('Ramesh', 'bananas123');
 
-SELECT check_password('Ramesh', 'bananas123');
-	
+-- a function to check for pro users : 
+DELIMITER $$
+CREATE FUNCTION check_isprouser(in_username varchar(20))
+RETURNS BOOLEAN DETERMINISTIC
+BEGIN 
+	declare result bool;
+    SELECT is_pro_member INTO result FROM users WHERE username = in_username; 
+    IF result = true THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
+END
+$$
+DELIMITER ;
+#select check_isprouser('Ramesh');
+
+
+
+-- Procedures
+
+-- a procedure to add the user to the group on approval of the group admin 
+DELIMITER $$
+CREATE PROCEDURE accept_group_request(IN in_group_id VARCHAR(10), IN in_username VARCHAR(20))
+BEGIN
+    DECLARE request_exists INT;
+
+    -- Check if the request exists
+    SELECT COUNT(*) INTO request_exists FROM group_requests
+    WHERE group_id = in_group_id AND username = in_username;
+
+    -- If the request exists, add the user to the group and remove the request
+    IF request_exists = 1 THEN
+        INSERT INTO user_groups (username, group_id, date_joined)
+        VALUES (in_username, in_group_id, CURDATE());
+        
+        DELETE FROM group_requests
+        WHERE group_id = in_group_id AND username = in_username;
+
+        SELECT 'Request Processed Successfully' AS Result;
+    ELSE
+        SELECT 'Request Not Found' AS Result;
+    END IF;
+END
+$$
+DELIMITER ;
+drop procedure accept_group_request ;
+#call accept_group_request('G00002','Bharath');
+
 
 DELIMITER $$
-CREATE PROCEDURE get_user_groups(IN user_name VARCHAR(10))
+CREATE PROCEDURE get_user_groups(IN user_name VARCHAR(20))
 BEGIN
 	select ho_group_id as Groupid , ho_group_name as Groupname
     from ho_group join user_groups on ho_group.ho_group_id = user_groups.group_id
-    where user_groups.member_name = user_name ;
+    where user_groups.username = user_name ;
+END
+$$
+DELIMITER ;
+#drop procedure get_user_groups;
+#call get_user_groups('Bharath');
+
+
+#getting groups with user as the admin : 
+DELIMITER $$
+CREATE PROCEDURE get_admin_groups(IN user_name VARCHAR(20))
+BEGIN
+	select ho_group_id as Groupid , ho_group_name as Groupname
+    from ho_group as ho join user_groups as ug on ho.ho_group_id = ug.group_id
+    where ug.username = user_name and ho.admin_name = user_name;
+END
+$$
+DELIMITER ;
+#call get_admin_groups('Bharath');
+
+DELIMITER $$
+CREATE PROCEDURE get_group_events(IN curr_group_id varchar(10))
+BEGIN
+	select event_id , event_name , location_name , event_date , event_time , event_desc , pollx
+    from planned_event 
+    where planned_event.group_id = curr_group_id ;
+END
+$$ 
+DELIMITER ;
+#CALL get_group_events('G00001');
+
+
+#Procedure to get group_details 
+DELIMITER $$
+CREATE PROCEDURE get_group_details(IN curr_group_id varchar(10))
+BEGIN
+	select * 
+    FROM ho_group
+    where ho_group.ho_group_id = curr_group_id ;
+END
+$$
+DELIMITER ; 
+#CALL get_group_details('G00001');
+
+
+#getting group_requests for admin approval 
+DELIMITER $$ 
+CREATE PROCEDURE get_group_requests(IN in_group_id VARCHAR(10))
+BEGIN 
+	select * 
+    FROM group_requests
+    WHERE group_id = in_group_id ;
+END 
+$$ 
+DELIMITER ; 
+#call get_group_requests('G00004');
+
+
+
+
+-- Triggers 
+
+DELIMITER $$
+CREATE TRIGGER update_member_count
+AFTER INSERT ON user_groups
+FOR EACH ROW
+BEGIN
+    -- Increment the member_count for the corresponding group
+    UPDATE ho_group
+    SET member_count = member_count + 1
+    WHERE ho_group_id = NEW.group_id;
 END
 $$
 DELIMITER ;
 
-drop procedure get_user_groups;
-
-call get_user_groups('Ramesh');
-
-
+DELIMITER $$
+CREATE TRIGGER delete_member_count
+AFTER DELETE ON user_groups
+FOR EACH ROW
+BEGIN
+    -- Decrement the member_count for the corresponding group
+    UPDATE ho_group
+    SET member_count = member_count - 1
+    WHERE ho_group_id = OLD.group_id;
+END
+$$
+DELIMITER ;
 
 
