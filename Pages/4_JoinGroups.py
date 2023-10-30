@@ -40,7 +40,8 @@ User1 = st.session_state['Username']
 
 if User1 != "":
     #get user's group req
-    userGroupId = st.text_input("Group ID")
+    st.title("Join Groups")
+    userGroupId = st.text_input("Enter the Group ID")
     if st.button("search and request"):
         if check_group_exists(userGroupId) :
             connection = connect_to_database()
