@@ -208,7 +208,7 @@ BEGIN
 END
 $$
 DELIMITER ;
-drop procedure accept_group_request ;
+-- drop procedure accept_group_request ;
 #call accept_group_request('G00002','Bharath');
 
 
@@ -306,7 +306,7 @@ END
 $$ 
 DELIMITER ;
 
-drop procedure add_group_requests;
+-- drop procedure add_group_requests;
 -- call add_group_requests('G00001','Zero');
 -- select * from group_requests;
 select * from group_requests;
