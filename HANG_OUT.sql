@@ -22,7 +22,7 @@ create table interests(
     interest_desc varchar(50),
     primary key (interest_id)
 );
-drop table interests;
+
 insert into interests values('I001','general','a general place to visit');
 
 create table ho_group(
@@ -123,9 +123,61 @@ END
 $$
 DELIMITER ;
 
-drop procedure get_user_groups;
 
-call get_user_groups('Ramesh');
+DELIMITER $$
+
+CREATE FUNCTION check_username(uname VARCHAR(255)) RETURNS INT DETERMINISTIC
+BEGIN
+    DECLARE user_exists INT;
+    SET user_exists = (
+        SELECT COUNT(*) FROM users WHERE username = uname
+    );
+
+    IF user_exists > 0 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
+END $$;
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE FUNCTION add_user(uname VARCHAR(255), uemail VARCHAR(255), upassword VARCHAR(255)) RETURNS INT DETERMINISTIC
+BEGIN
+    INSERT INTO users (username, email_id, password)
+    VALUES (uname, uemail, upassword);
+    
+    RETURN 1;
+END $$;
+
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

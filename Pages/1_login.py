@@ -2,7 +2,6 @@ import mysql.connector
 import streamlit as st
 from mysql.connector import Error
 
-
 # Establish a connection to the MySQL Server
 def connect_to_database():
     try:
@@ -23,48 +22,50 @@ def login_page():
     password = st.text_input("Password", type="password")
     if st.button("User_Login"):
         connection = connect_to_database()
-        cursor = connection.cursor()
+        cursor = connection.cursor(buffered=True)
+
         cursor.execute("SELECT check_password(%s,%s)", (username, password))    
         result = cursor.fetchone()
         if result[0] == 1:
             st.success("Login successful.")
             st.session_state['Username'] = username
             st.title(f"Welcome, {st.session_state['Username']}")
-            st.text("you can now access your groups ") 
-
+            st.text("You can now access your groups.") 
         else:
             st.error("Invalid username or password.")
     
-    
-
 def sign_up():
     st.title("Sign Up")
-    username = st.text_input("Your name")
-    password = st.text_input("Your Password", type="password")
+    username = st.text_input("Username")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+    verify_password = st.text_input("Verify Password", type="password")
     
     if st.button("Sign_Up"):
-        connection = connect_to_database()
-        cursor = connection.cursor()
-        cursor.execute("SELECT check_username(%s)", (username,))
-        result = cursor.fetchone()
-        if result[0] == 1:
-            st.error("Username already exists.")
+        if password != verify_password:
+            st.error("Passwords do not match.")
         else:
-            cursor.execute("SELECT add_user(%s,%s)", (username, password))
-            connection.commit()
-            st.success("Sign up successful. Please log in.")
-            #redirect to login page
-    
+            connection = connect_to_database()
+            cursor = connection.cursor(buffered=True)
 
+            cursor.execute("SELECT check_username(%s)", (username,))
+            result = cursor.fetchone()
+            if result[0] == 1:
+                st.error("Username already exists.")
+            else:
+                cursor.execute("SELECT add_user(%s, %s, %s)", (username, email, password))
+                connection.commit()
+                st.success("Sign up successful. Please log in.")
+    
 def Login_and_signup():
     st.title("Login and Signup")
-    if 'Username' not in st.session_state :
+    if 'Username' not in st.session_state:
         st.session_state['Username'] = ""
 
     User1 = st.session_state['Username']
 
-    if (st.session_state['Username']):
-        st.text('you have already logged in as ' + User1 + ' you can go back to your groups')
+    if User1:
+        st.text('You have already logged in as ' + User1 + ' you can go back to your groups')
         # Display the user's groups here
     else:
         choice = st.radio("Choose an option:", ("Login", "Signup"))
@@ -72,9 +73,5 @@ def Login_and_signup():
             login_page()
         elif choice == "Signup":
             sign_up()
-       #radiobutton for login or signup
-
-
- 
 
 Login_and_signup()
