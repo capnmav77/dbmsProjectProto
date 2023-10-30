@@ -1,6 +1,7 @@
 import mysql.connector
 import streamlit as st
 from mysql.connector import Error
+st.sidebar.isExpanded = False
 
 # Establish a connection to the MySQL Server
 def connect_to_database():
@@ -22,11 +23,19 @@ def login_page():
     password = st.text_input("Password", type="password")
     if st.button("User_Login"):
         connection = connect_to_database()
-        cursor = connection.cursor(buffered=True)
-
+        cursor = connection.cursor()
         cursor.execute("SELECT check_password(%s,%s)", (username, password))    
         result = cursor.fetchone()
         if result[0] == 1:
+            #check for pro user 
+            # cursor.execute ("SELECT check_isprouser(%s)", (username))
+            # result = cursor.fetchone()
+            # if result[0] == 1:
+            #     st.session_state['isProUser'] = True
+            # else:
+            #     st.session_state['isProUser'] = False
+
+            #for displaying proper login message 
             st.success("Login successful.")
             st.session_state['Username'] = username
             st.title(f"Welcome, {st.session_state['Username']}")
