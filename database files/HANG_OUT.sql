@@ -314,6 +314,36 @@ select * from user_groups;
 -- call add_group_requests('G00003','Bharath');
 
 
+DELIMITER $$
+
+CREATE FUNCTION check_username(uname VARCHAR(255)) RETURNS INT DETERMINISTIC
+BEGIN
+    DECLARE user_exists INT;
+    SET user_exists = (
+        SELECT COUNT(*) FROM users WHERE username = uname
+    );
+
+    IF user_exists > 0 THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
+END $$;
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE FUNCTION add_user(uname VARCHAR(255), uemail VARCHAR(255), upassword VARCHAR(255)) RETURNS INT DETERMINISTIC
+BEGIN
+    INSERT INTO users (username, email_id, password)
+    VALUES (uname, uemail, upassword);
+    
+    RETURN 1;
+END $$;
+
+DELIMITER ;
+
 -- Triggers 
 
 DELIMITER $$
