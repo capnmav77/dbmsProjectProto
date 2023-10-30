@@ -92,7 +92,7 @@ insert into user_groups values('Ramesh','G00001','2023-10-23');
 insert into user_groups values('Ramesh','G00002','2023-10-23');
 insert into user_groups values('Ramesh','G00003','2023-10-23');
 insert into user_groups values('Bharath','G00004','2023-10-23');
--- DELETE FROM user_groups WHERE group_id = 'G00002' AND member_name = 'Bharath';
+DELETE FROM user_groups WHERE group_id = 'G00002' AND username = 'Ramesh';
 -- DELETE FROM user_groups WHERE group_id = 'G00002' AND member_name = 'Zero';
 
 create table group_interests(
@@ -198,6 +198,8 @@ BEGIN
         update ho_group 
         set pending_requests = pending_requests - 1
         where ho_group_id = in_group_id;
+        
+         COMMIT;
 
         SELECT 'Request Processed Successfully' AS Result;
     ELSE
@@ -296,16 +298,19 @@ BEGIN
 		set pending_requests = pending_requests + 1
 		WHERE ho_group_id = in_group_id;
         
+        COMMIT;
+        
         SELECT 'user request added ';
 	end if;	
 END 
 $$ 
 DELIMITER ;
+
 drop procedure add_group_requests;
 -- call add_group_requests('G00001','Zero');
 -- select * from group_requests;
--- select * from group_requests;
--- select * from user_groups;
+select * from group_requests;
+select * from user_groups;
 -- call add_group_requests('G00003','Bharath');
 
 
@@ -336,5 +341,6 @@ BEGIN
 END
 $$
 DELIMITER ;
+
 
 

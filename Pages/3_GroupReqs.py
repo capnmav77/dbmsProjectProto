@@ -51,9 +51,8 @@ def display_group_requests(request):
             cursor = connection.cursor()
             cursor.execute(f"CALL accept_group_request('{reqGroup}','{reqUser}');")
             response  = cursor.fetchall()
-            connection.commit()
             cursor.close()
-            st.text('Accepted Request')
+            st.text(response)
             # Mark the request as processed
             reqUser = None
             reqGroup = None
@@ -62,8 +61,8 @@ def display_group_requests(request):
             connection = connect_to_database()
             cursor = connection.cursor()
             cursor.execute(f"DELETE FROM group_requests WHERE group_id = '{reqGroup}' AND username = '{reqUser}';")
-            connection.commit()
             cursor.close()
+            connection.commit()
             st.text('Request rejected')
             # Mark the request as processed
             reqUser = None

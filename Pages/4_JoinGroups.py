@@ -23,8 +23,9 @@ def check_group_exists(groupName):
     cursor = connection.cursor()
     cursor.execute(f"select check_group_exists('{groupName}')")
     result = cursor.fetchone()
+    print(result)
     cursor.close()
-    if result == 1:
+    if result[0] == 1:
         return 1
     else :
         return 0
@@ -40,15 +41,17 @@ User1 = st.session_state['Username']
 if User1 != "":
     #get user's group req
     userGroupId = st.text_input("Group ID")
-    if check_group_exists(userGroupId) :
-        connection = connect_to_database()
-        cursor = connection.cursor()
-        cursor.execute(f"call add_group_requests('{userGroupId}','{User1}');")
-        response = cursor.fetchall()
-        connection.commit()
-        st.text(response)
-    else:
-        st.text("The group doesn't exists check your group-id")
+    if st.button("search and request"):
+        if check_group_exists(userGroupId) :
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            cursor.execute(f"call add_group_requests('{userGroupId}','{User1}');")
+            response = cursor.fetchall()
+            
+            st.text(response)
+
+        else:
+            st.text("The group doesn't exists check your group-id")
     
 
 else:
