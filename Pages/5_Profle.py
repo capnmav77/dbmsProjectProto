@@ -28,6 +28,7 @@ def update_user_info(email,street,city,state,gender,password,about,new_password_
 
 
 def display_user_prof(user_info):
+
     email =  st.text_input('Email',user_info[1])
     Street = st.text_input('Street',user_info[2])
     City = st.text_input('City',user_info[3])
@@ -42,6 +43,8 @@ def display_user_prof(user_info):
         st.text("✅ Pro membership activated.")
     else: 
         st.text("try out the Pro membership")
+
+        
     if(st.button('make changes')):
         if(Password != user_info[6]):
             if(Password != Password2):
@@ -70,7 +73,5 @@ if User1 != "":
     connection.close()
     display_user_prof(result[0])
     
-
-
 else:
     st.warning("You need to log in to access this page.")
