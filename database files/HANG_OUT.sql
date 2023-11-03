@@ -14,6 +14,7 @@ create table users(
     is_pro_member bool default false ,
     PRIMARY KEY (username)
 );
+select * from users where username = 'Ramesh';
 insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
 insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
 insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
@@ -375,5 +376,7 @@ END
 $$
 DELIMITER ;
 
-
+select  group_id as dId ,ho_group_name as gName , admin_name as adName , member_count as MC 
+from  group_requests as gr join ho_group as jg
+where gr.group_id = jg.ho_group_id and gr.username = 'Bharath';
 

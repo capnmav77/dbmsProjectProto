@@ -17,13 +17,28 @@ def connect_to_database():
     except Error as e:
         st.error(f"Error: {e}")
         return None
+def display_requests(requests):
+    st.text("pending requests")
+    #the dataframe with the column names as the column names of the table
+    df = pd.DataFrame(requests,columns=['Group ID','Group Name','Admin Name','Member Count'])
+    st.dataframe(df)
+    
+def get_pending_requests(User1):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute(f"select  group_id as dId ,ho_group_name as gName , admin_name as adName , member_count as MC from  group_requests as gr join ho_group as jg where gr.group_id = jg.ho_group_id and gr.username = '{User1}';")
+    result = cursor.fetchall()
+    print(result)
+    if(len(result)==0):
+        st.text("No pending requests")
+    else:
+        display_requests(result)
     
 def check_group_exists(groupName):
     connection = connect_to_database()
     cursor = connection.cursor()
     cursor.execute(f"select check_group_exists('{groupName}')")
     result = cursor.fetchone()
-    print(result)
     cursor.close()
     if result[0] == 1:
         return 1
@@ -49,10 +64,11 @@ if User1 != "":
             cursor.execute(f"call add_group_requests('{userGroupId}','{User1}');")
             response = cursor.fetchall()
             
-            st.text(response)
+            st.text(response[0][0])
 
         else:
             st.text("The group doesn't exists check your group-id")
+    get_pending_requests(User1)
     
 
 else:
