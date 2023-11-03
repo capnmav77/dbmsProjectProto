@@ -26,6 +26,11 @@ def display_group_details(group_details):
     # st.text("Group Name: " + group_details[1])
     # st.text("Group ID: " + str(group_details[0]))
     # st.text("Group Description: " + group_details[2])
+    # st.text("Admin: " + group_details[3])
+    # st.text("Date Created: " + str(group_details[4]))
+    # st.text("Member Count: " + str(group_details[5]))
+    # #st.text("Previously Visited Location: " + group_details[6])
+    # st.text("Pending Requests: " + str(group_details[7]))
 
 def get_group_details(group_id):
     connection = connect_to_database()
@@ -59,22 +64,14 @@ def get_group_events(group_id):
     cursor.execute(f"call get_group_events('{group_id}')")
     result = cursor.fetchall()
     st.subheader("Group Events")
-    print(result)
+    #print(result)
     if result == []:
         st.warning("There are no events in this group.")
     else:
         display_event_details(result[0])
 
 
-
-# Check if the user is logged in
-if 'Username' not in st.session_state:
-    st.session_state["Username"] = ""
-
-User1 = st.session_state['Username']
-
-if User1 != "":
-    User1 = st.session_state['Username']
+def GroupsPage(User1):
     st.text(f"Welcome, {User1}")
     
     # Display the user's groups here
@@ -82,7 +79,7 @@ if User1 != "":
     cursor = connection.cursor()
     cursor.execute(f"call get_user_groups('{User1}')")
     result = cursor.fetchall()
-    print(result)
+    #print(result)
     #creating a dropdown menu for the user to select a group
     # Extract group names from the results
     group_names = [group[1] for group in result]
@@ -95,14 +92,30 @@ if User1 != "":
         # Find the corresponding group_id for the selected group name
         selected_group_id = [group[0] for group in result if group[1] == selected_group_name][0]
         
-        # Call the get_group_events function with the selected group_id
+        # Split the page into two columns
+        col1, col2 = st.columns(2)
+        
+        # with col1:
+        #     # Display group events
         get_group_details(selected_group_id)
-        st.write("---")
+        
+
+        # with col2:
+        #     # Display group information
         get_group_events(selected_group_id)
 
     else:
         st.warning("You have no groups to select from.")
 
-    #creating a button to display the group members
+
+# Check if the user is logged in
+if 'Username' not in st.session_state:
+    st.session_state["Username"] = ""
+
+User1 = st.session_state['Username']
+
+if User1 != "":
+    GroupsPage(User1)
+
 else:
     st.warning("You need to log in to access this page.")

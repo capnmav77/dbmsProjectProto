@@ -35,18 +35,20 @@ create table ho_group(
     ho_group_desc varchar(50) , 
     admin_name varchar(20) not null , 
     date_created date, 
-    member_count int default 1 not null,
-    previously_visited_loc varchar(10),
+    member_count int default 0 not null,
+    previously_visited_loc varchar(10) ,
     pending_requests int default 0 not null ,
     primary key (ho_group_id),
-    foreign key (admin_name) references users(username)
+    foreign key (admin_name) references users(username) 
 );
--- select * from ho_group;
+select * from ho_group;
 insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
 insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
 insert into ho_group values('G00003','TG-3','just another test group','Ramesh', '2023-10-23', 1,null,0);
 insert into ho_group values('G00004','TG-4','just another test group','Bharath', '2023-10-23', 1,null,0);
-    
+delete from ho_group where ho_group_id = 'G00005';
+
+
 create table vis_locations(
 	location_name varchar(20) not null unique, 
     location_type varchar(10) default 'I001' not null , #should refer a type of interest
@@ -88,6 +90,7 @@ create table user_groups(
     foreign key (username) references users(username) on delete cascade,
     foreign key (group_id) references ho_group(ho_group_id) on delete cascade 
 );
+
 select * from user_groups;
 insert into user_groups values('Ramesh','G00001','2023-10-23');
 insert into user_groups values('Ramesh','G00002','2023-10-23');
@@ -345,6 +348,46 @@ select * from group_requests;
 select * from user_groups;
 -- call add_group_requests('G00003','Bharath');
 
+DELIMITER $$
+
+CREATE PROCEDURE UpdateGroupAdminAndDeleteGroup(IN deleted_user VARCHAR(20))
+BEGIN
+    DECLARE admin_group_id VARCHAR(10);
+    DECLARE longest_member VARCHAR(20);
+    DECLARE member_count INT;
+
+    SELECT ho_group_id INTO admin_group_id
+    FROM ho_group
+    WHERE admin_name = deleted_user;
+
+    -- If the deleted user was an admin
+    IF admin_group_id IS NOT NULL THEN
+        -- Find the person who has been in the group for the longest time
+        SELECT username INTO longest_member
+        FROM user_groups
+        WHERE group_id = admin_group_id
+        ORDER BY date_joined
+        LIMIT 1;
+
+        -- Update the group admin name
+        UPDATE ho_group
+        SET admin_name = longest_member
+        WHERE ho_group_id = admin_group_id;
+
+        -- Check the member count in the group
+        SELECT COUNT(*) INTO member_count
+        FROM user_groups
+        WHERE group_id = admin_group_id;
+
+        -- If there are no members left in the group, delete the group
+        IF member_count = 0 THEN
+            DELETE FROM ho_group WHERE ho_group_id = admin_group_id;
+        END IF;
+    END IF;
+END;
+$$
+
+DELIMITER ;
 
 
 
@@ -376,7 +419,17 @@ END
 $$
 DELIMITER ;
 
-select  group_id as dId ,ho_group_name as gName , admin_name as adName , member_count as MC 
-from  group_requests as gr join ho_group as jg
-where gr.group_id = jg.ho_group_id and gr.username = 'Bharath';
+
+DELIMITER $$
+
+CREATE TRIGGER after_delete_user
+AFTER DELETE ON users
+FOR EACH ROW
+BEGIN
+    CALL UpdateGroupAdminAndDeleteGroup(OLD.username);
+END;
+$$
+DELIMITER ;
+
+
 

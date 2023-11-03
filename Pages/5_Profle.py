@@ -53,7 +53,16 @@ def display_user_prof(user_info):
                 update_user_info(email,Street,City,State,Gender,Password,About,new_password_updation=True)
         else:
             update_user_info(email,Street,City,State,Gender,Password,About,new_password_updation=False)
-                        
+
+
+def ProfilePage(User1):
+    st.subheader(f"Hey, {User1}, feel like changing your profile?")
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT * FROM users WHERE username = '{User1}'")
+    result = cursor.fetchall()
+    connection.close()
+    display_user_prof(result[0])
             
 
 
@@ -64,14 +73,8 @@ if 'Username' not in st.session_state:
 User1 = st.session_state['Username']
 
 if User1 != "":
-    User1 = st.session_state['Username']
-    st.subheader(f"Hey, {User1}, feel like changing your profile?")
-    connection = connect_to_database()
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT * FROM users WHERE username = '{User1}'")
-    result = cursor.fetchall()
-    connection.close()
-    display_user_prof(result[0])
+    ProfilePage(User1)
+    
     
 else:
     st.warning("You need to log in to access this page.")

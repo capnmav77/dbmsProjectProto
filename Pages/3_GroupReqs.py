@@ -108,14 +108,17 @@ if User1 != "":
     if group_names:
         # Create a selectbox with group names
         selected_group_name = st.selectbox("Your Groups :", group_names)
-        
         # Find the corresponding group_id for the selected group name
         selected_group_id = [group[0] for group in result if group[1] == selected_group_name][0]
         
         # Call the get_group_events function with the selected group_id
-        get_group_details(selected_group_id)
-        st.write("---")
-        get_group_requests(selected_group_id)
+        choice = st.radio('Select an option',('View Group Details','View Group Requests'))
+        if choice == 'View Group Details':
+            get_group_details(selected_group_id)
+        elif choice == 'View Group Requests':
+            get_group_requests(selected_group_id)
+        else:
+            st.text("choose an option")
 
     else:
         st.warning("You have no groups")

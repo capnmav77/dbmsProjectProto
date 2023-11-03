@@ -17,12 +17,15 @@ def connect_to_database():
     except Error as e:
         st.error(f"Error: {e}")
         return None
+    
+
 def display_requests(requests):
     st.text("pending requests")
     #the dataframe with the column names as the column names of the table
     df = pd.DataFrame(requests,columns=['Group ID','Group Name','Admin Name','Member Count'])
     st.dataframe(df)
     
+
 def get_pending_requests(User1):
     connection = connect_to_database()
     cursor = connection.cursor()
@@ -34,6 +37,7 @@ def get_pending_requests(User1):
     else:
         display_requests(result)
     
+
 def check_group_exists(groupName):
     connection = connect_to_database()
     cursor = connection.cursor()
@@ -46,14 +50,7 @@ def check_group_exists(groupName):
         return 0
 
 
-
-#Check if the user is logged in
-if 'Username' not in st.session_state:
-    st.session_state["Username"] = ""
-
-User1 = st.session_state['Username']
-
-if User1 != "":
+def joinGroupsPage(User1):
     #get user's group req
     st.title("Join Groups")
     userGroupId = st.text_input("Enter the Group ID")
@@ -69,7 +66,18 @@ if User1 != "":
         else:
             st.text("The group doesn't exists check your group-id")
     get_pending_requests(User1)
-    
 
+
+
+
+#Check if the user is logged in
+if 'Username' not in st.session_state:
+    st.session_state["Username"] = ""
+
+User1 = st.session_state['Username']
+
+if User1 != "":
+    joinGroupsPage(User1)
+    
 else:
     st.warning("You need to log in to access this page.")

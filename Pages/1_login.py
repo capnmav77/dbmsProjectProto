@@ -27,13 +27,14 @@ def login_page():
         cursor.execute("SELECT check_password(%s,%s)", (username, password))    
         result = cursor.fetchone()
         if result[0] == 1:
-            #check for pro user 
-            # cursor.execute ("SELECT check_isprouser(%s)", (username))
-            # result = cursor.fetchone()
-            # if result[0] == 1:
-            #     st.session_state['isProUser'] = True
-            # else:
-            #     st.session_state['isProUser'] = False
+            #heck for pro user 
+            cursor.execute (f"SELECT check_isprouser('{username}')")
+            result = cursor.fetchone()
+            print(result[0])
+            if result[0] == 1:
+                st.session_state['isProUser'] = True
+            else:
+                st.session_state['isProUser'] = False
 
             #for displaying proper login message 
             st.success("Login successful.")
