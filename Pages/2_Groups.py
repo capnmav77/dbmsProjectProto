@@ -19,18 +19,57 @@ def connect_to_database():
         return None
     
 
+def display_group_requests(request):
+    reqUser = request[1]
+    reqGroup = request[0]
+    
+    if reqUser and reqGroup:
+        key = f'{reqUser}-{reqGroup}'
+        st.text("User name: " + reqUser + " is requesting to join this group")
+
+        if st.button(f"Accept", key=f'A-{key}'):
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            cursor.execute(f"CALL accept_group_request('{reqGroup}','{reqUser}');")
+            response  = cursor.fetchall()
+            cursor.close()
+            st.text(response)
+            # Mark the request as processed
+            reqUser = None
+            reqGroup = None
+
+        if st.button(f"Reject", key=f'R-{key}'):
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            cursor.execute(f"DELETE FROM group_requests WHERE group_id = '{reqGroup}' AND username = '{reqUser}';")
+            cursor.close()
+            connection.commit()
+            st.text('Request rejected')
+            # Mark the request as processed
+            reqUser = None
+            reqGroup = None
+           
+
+
+def get_group_requests(group_id):
+    st.subheader("Join Requests:")
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute(f"call get_group_requests('{group_id}')")
+    result = cursor.fetchall()
+    cursor.close()
+    if result:
+        for it in result:
+            print(it)
+            display_group_requests(it)  
+    else :
+        st.warning("There are No requests pending")
+ 
 
 def display_group_details(group_details):
     st.subheader("Group Details")
     st.table(pd.DataFrame([group_details], columns=["Group ID", "Group Name", "Group Description","Group Owner","date created","member count","previously_visited_location","pending Requests"]))
-    # st.text("Group Name: " + group_details[1])
-    # st.text("Group ID: " + str(group_details[0]))
-    # st.text("Group Description: " + group_details[2])
-    # st.text("Admin: " + group_details[3])
-    # st.text("Date Created: " + str(group_details[4]))
-    # st.text("Member Count: " + str(group_details[5]))
-    # #st.text("Previously Visited Location: " + group_details[6])
-    # st.text("Pending Requests: " + str(group_details[7]))
+
 
 def get_group_details(group_id):
     connection = connect_to_database()
@@ -87,25 +126,20 @@ def GroupsPage(User1):
     if group_names:
         # Create a selectbox with group names
         selected_group_name = st.selectbox("Your Groups :", group_names)
-        #st.text(f"You selected {selected_group_name}")
-        
-        # Find the corresponding group_id for the selected group name
-        selected_group_id = [group[0] for group in result if group[1] == selected_group_name][0]
-        
-        # Split the page into two columns
-        col1, col2 = st.columns(2)
-        
-        # with col1:
-        #     # Display group events
-        get_group_details(selected_group_id)
-        
 
-        # with col2:
-        #     # Display group information
-        get_group_events(selected_group_id)
+        selected_group_id = [group[0] for group in result if group[1] == selected_group_name][0]
+
+        get_group_details(selected_group_id)
+        Choice = st.radio("Choose", ("View Group Events","View Group Requests" ))
+        if Choice == "View Group Events":
+            get_group_events(selected_group_id)
+        else:
+            get_group_requests(selected_group_id)
 
     else:
         st.warning("You have no groups to select from.")
+
+
 
 
 # Check if the user is logged in

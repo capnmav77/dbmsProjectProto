@@ -68,6 +68,7 @@ def sign_up():
                 connection.commit()
                 st.success("Sign up successful. Please log in.")
     
+
 def Login_and_signup():
     st.title("Login and Signup")
     if 'Username' not in st.session_state:
@@ -84,5 +85,6 @@ def Login_and_signup():
             login_page()
         elif choice == "Signup":
             sign_up()
+
 
 Login_and_signup()
