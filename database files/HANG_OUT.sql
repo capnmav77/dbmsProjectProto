@@ -14,6 +14,7 @@ create table users(
     is_pro_member bool default false ,
     PRIMARY KEY (username)
 );
+select * from users;
 select * from users where username = 'Ramesh';
 insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
 insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
@@ -26,6 +27,8 @@ create table interests(
     primary key (interest_id)
 );
 -- drop table interests;
+insert into interests values('I004','Food','Yum');
+insert into interests values('I003','Sports','Stress your bod to the limit');
 insert into interests values('I001','general','a general place to visit');
 insert into interests values('I002','concerts','concerts to party into ');
 
@@ -62,6 +65,7 @@ create table vis_locations(
     primary key (location_name),
 	foreign key (location_type) references interests(interest_id) on update cascade 
 );
+select * from vis_locations;
 insert into vis_locations values('Rameshs_house','I001', 'your','fav','home', 'rameshwar77411@gmail.com','its a friendly neighbourhood home' , 5,null);
 insert into vis_locations values('Spain','I002', 'your','fav','country', 'spain@gmail.com','its spain !' , 5, null);
 
