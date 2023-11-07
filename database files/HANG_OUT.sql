@@ -78,6 +78,8 @@ create table planned_event(
     foreign key (location_name) references vis_locations(location_name) on delete cascade,
     foreign key (group_id) references ho_group(ho_group_id) on delete CASCADE
 );
+select * from planned_event;
+delete from planned_event where event_id = 'E00004';
 insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 insert into planned_event values('E00001','COACHELLA','G00004','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 
@@ -90,6 +92,8 @@ create table user_groups(
     foreign key (username) references users(username) on delete cascade,
     foreign key (group_id) references ho_group(ho_group_id) on delete cascade 
 );
+
+
 
 select * from user_groups;
 insert into user_groups values('Ramesh','G00001','2023-10-23');
