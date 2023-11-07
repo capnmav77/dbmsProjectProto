@@ -16,6 +16,14 @@ def connect_to_database():
         st.error(f"Error: {e}")
         return None
     
+def checkforPro(User1):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute(f"select is_pro_member from users where username = '{User1}'")
+    result = cursor.fetchone()
+    cursor.close()
+    return result[0]
+
 def login_page():
     st.title("User Login")
     username = st.text_input("Username")
@@ -23,10 +31,13 @@ def login_page():
     if st.button("User_Login"):
         connection = connect_to_database()
         cursor = connection.cursor(buffered=True)
-
         cursor.execute("SELECT check_password(%s,%s)", (username, password))    
         result = cursor.fetchone()
+        connection.close()
+
         if result[0] == 1:
+            pro_user = checkforPro(username)
+            st.session_state['is_pro_member'] = pro_user
             st.success("Login successful.")
             st.session_state['Username'] = username
             st.title(f"Welcome, {st.session_state['Username']}")

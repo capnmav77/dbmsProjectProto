@@ -89,15 +89,16 @@ def delete_group(User1):
 # Check if the user is logged in
 if 'Username' not in st.session_state:
     st.session_state["Username"] = ""
-if 'isProUser' not in st.session_state:
-    st.session_state["isProUser"] = False
+
+if 'is_pro_member' not in st.session_state:
+    st.session_state["is_pro_user"] = 0
 
 User1 = st.session_state['Username']
-is_pro_user = st.session_state['isProUser']
+is_pro_user = st.session_state['is_pro_member']
 
 
 
-if User1 != "" and is_pro_user == True:
+if User1 != "" and is_pro_user == 1:
     Choice = st.radio("Choose", ("Create Group", "Delete Group"))
     if Choice == "Create Group":
         create_new_group(User1)

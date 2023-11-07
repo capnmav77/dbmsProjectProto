@@ -44,45 +44,36 @@ def check_for_duplicates(event_name , group_id , event_date , event_time):
     cursor.close()
     return result[0]
 
-def show_upcoming_events(User1):
-    st.subheader("Upcoming Events")
-    connection = connect_to_database()
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT event_name, group_id, event_date, event_time, location_name, event_desc FROM planned_event WHERE event_date >= CURDATE() AND group_id IN (SELECT group_id FROM user_groups WHERE username = '{User1}')")
-    events_data = cursor.fetchall()
-    cursor.close()
-    if events_data:
-        st.table(events_data)
-    else:
-        st.warning("No upcoming events found.")
+
 
 def DeleteEvent(User1):
-    
     st.subheader("Delete Events")
 
     # Get the list of events for the user to select for deletion
     connection = connect_to_database()
     cursor = connection.cursor()
-    cursor.execute(f"SELECT event_name, event_date, event_time FROM planned_event WHERE group_id IN (SELECT group_id FROM user_groups WHERE username = '{User1}')")
-    events_data = cursor.fetchall()
+    cursor.execute(f"SELECT event_name, event_date, event_time , group_id , event_id FROM planned_event WHERE group_id IN (SELECT group_id FROM user_groups WHERE username = '{User1}')")
+    events_data = cursor.fetchall() 
+    print(events_data)
     cursor.close()
 
     if not events_data:
         st.warning("No events found for deletion.")
         return
 
-    event_options = [f"{event[0]} - {event[1]} {event[2]}" for event in events_data]
+    event_options = [f"{event[0]} - {event[3]} - {event[1]} - {event[2]} - {event[4]} " for event in events_data]
 
     selected_event = st.selectbox("Select an event to delete:", event_options)
 
     if st.button("Delete Selected Event"):
         selected_event_name = selected_event.split(' - ')[0]
-        selected_event_date = selected_event.split(' - ')[1].split(' ')[0]
-        selected_event_time = selected_event.split(' ')[-1]
-
+        selected_event_date = selected_event.split(' - ')[2].split(' ')[0]
+        selected_event_time = selected_event.split(' - ')[3]
+        selected_event_id = selected_event.split(' - ')[-1]
+    
         connection = connect_to_database()
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM planned_event WHERE event_name = '{selected_event_name}' AND event_date = '{selected_event_date}' AND event_time = '{selected_event_time}'")
+        cursor.execute(f"DELETE FROM planned_event WHERE event_id = '{selected_event_id}'")
         connection.commit()
         cursor.close()
 
@@ -94,7 +85,7 @@ def AddEvents(User1):
 
     # Get user input for event details
     event_name = st.text_input("Event Name:")
-    group_name = st.text_input("Group ID:")
+    group_id = st.text_input("Group ID:")
     location_name = st.text_input("Location Name:")
     event_date = st.date_input("Event Date / YYYY-MM-DD")
     event_time = st.time_input("Event Time / HH-MM-SS")
@@ -103,7 +94,7 @@ def AddEvents(User1):
     if st.button("Add Event"):
         connection = connect_to_database()
         cursor = connection.cursor()
-        cursor.execute(f"SELECT ug.group_id FROM user_groups ug WHERE ug.username = '{User1}' AND ug.group_id = ( SELECT hg.ho_group_id FROM ho_group hg WHERE hg.ho_group_name = '{group_name}');")
+        cursor.execute(f"SELECT ug.group_id FROM user_groups ug WHERE ug.username = '{User1}' AND ug.group_id =  '{group_id}';")
         group_id = cursor.fetchone()
         cursor.close()
         print(group_id)
@@ -142,7 +133,7 @@ def AddEvents(User1):
                 else:
                     st.warning("Event already present , check database")
         else:
-            st.error(f"Group '{group_name}' does not exist or you are not the admin of this group.")    
+            st.error(f"Group '{group_id}' does not exist or you are not the admin of this group.")    
 
 
 def update_event(User1):
@@ -171,7 +162,7 @@ def update_event(User1):
     new_event_description = st.text_area("New Event Description")
 
     if st.button("Update Event"):
-        cursor.execute(f"UPDATE planned_event SET event_name = '{new_event_name}', event_date = '{new_event_date}', event_time = '{new_event_time}', event_description = '{new_event_description}' WHERE event_name = '{event_name}' AND group_id = '{group_id}' AND event_date = '{event_date}' AND event_time = '{event_time}'")
+        cursor.execute(f"UPDATE planned_event SET event_name = '{new_event_name}', event_date = '{new_event_date}', event_time = '{new_event_time}', event_desc = '{new_event_description}' WHERE event_name = '{event_name}' AND group_id = '{group_id}' AND event_date = '{event_date}' AND event_time = '{event_time}'")
         connection.commit()
         st.success("Event updated successfully!")
 
@@ -185,14 +176,12 @@ User1 = st.session_state['Username']
 
 if User1 != "":
     st.title("Event-Page")
-    Choice = st.radio("Select an option", ("Show Events","Create Event", "Update Event", "Delete Event"))
+    Choice = st.radio("Select an option", ("Create Event", "Update Event", "Delete Event"))
 
     if Choice == 'Create Event':
         AddEvents(User1)
     elif Choice == 'Delete Event':
         DeleteEvent(User1)
-    elif Choice == 'Show Events':
-        show_upcoming_events(User1)
     elif Choice == 'Update Event':
         update_event(User1)
 

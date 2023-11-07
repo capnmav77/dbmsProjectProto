@@ -36,8 +36,8 @@ def display_user_prof(user_info):
     st.text(f"Gender: {user_info[5]}")
     Gender = st.radio(f'Gender:{user_info[5]}',options=["Male","Female","Prefer not to say"],horizontal=True,)
     st.text(f"selected:{Gender}")
-    Password = st.text_input('Password',user_info[6])
-    Password2 = st.text_input('Password Confirmation',user_info[6])
+    Password = st.text_input('Password',user_info[6],type="password")
+    Password2 = st.text_input('Password Confirmation',user_info[6], type="password")
     About = st.text_input('About',user_info[7])
     if(user_info[9]==1):
         st.text("✅ Pro membership activated.")
