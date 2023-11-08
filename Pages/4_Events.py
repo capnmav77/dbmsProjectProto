@@ -31,6 +31,7 @@ def get_latest_id():
     new_group_id = f'E{latest_group_id + 1:05d}'
     print(new_group_id)
     cursor.close()
+    connection.close()
     return new_group_id
 
 
@@ -42,6 +43,7 @@ def check_for_duplicates(event_name , group_id , event_date , event_time):
     result = cursor.fetchone()
     print(result)
     cursor.close()
+    connection.close()
     return result[0]
 
 
@@ -56,6 +58,7 @@ def DeleteEvent(User1):
     events_data = cursor.fetchall() 
     print(events_data)
     cursor.close()
+    connection.close()
 
     if not events_data:
         st.warning("No events found for deletion.")
@@ -70,13 +73,13 @@ def DeleteEvent(User1):
         selected_event_date = selected_event.split(' - ')[2].split(' ')[0]
         selected_event_time = selected_event.split(' - ')[3]
         selected_event_id = selected_event.split(' - ')[-1]
-    
+        print(selected_event_id)
         connection = connect_to_database()
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM planned_event WHERE event_id = '{selected_event_id}'")
+        cursor.execute(f"delete from planned_event where event_id = '{selected_event_id}';")
         connection.commit()
         cursor.close()
-
+        connection.close()
         st.success(f"Event '{selected_event_name}' on {selected_event_date} at {selected_event_time} has been deleted.")
 
 
@@ -100,7 +103,7 @@ def AddEvents(User1):
         print(group_id)
 
         if group_id:
-            connection = connect_to_database()
+            #connection = connect_to_database()
             cursor = connection.cursor()
             # Check if the location exists
             cursor.execute("SELECT location_name FROM vis_locations WHERE location_name = %s", (location_name,))
@@ -112,7 +115,9 @@ def AddEvents(User1):
                 # Insert the event into the database
                 group_id = group_id[0]
                 event_id = get_latest_id()
-                print(event_date , event_time , event_id,group_id)
+                print(event_date , event_time , event_id , group_id)
+
+                #null constraint
                 if (event_description == "") :
                     event_description = "a random fun event"
 
@@ -123,21 +128,25 @@ def AddEvents(User1):
 
                 if result == 0:
                     #push to database 
-                    connection = connect_to_database()
                     cursor = connection.cursor()
                     cursor.execute(f"INSERT INTO planned_event values ('{event_id}','{event_name}', '{group_id}','{location_name}', '{event_date}','{event_time}','{event_description}', 0)")
                     connection.commit()
                     cursor.close()
+                    connection.close()
                     st.success("Event added successfully!")
 
                 else:
                     st.warning("Event already exists.")
+                    connection.close()
         else:
-            st.error(f"Group '{group_id}' does not exist or you are not the admin of this group.")    
+            st.error(f"Group '{group_id}' does not exist or you are not the admin of this group.") 
+            connection.close()   
 
 
 def update_event(User1):
     st.subheader("Update Event")
+
+    #connection to database
     connection = connect_to_database()
     cursor = connection.cursor()
 
@@ -167,6 +176,7 @@ def update_event(User1):
         st.success("Event updated successfully!")
 
     cursor.close()
+    connection.close()
 
 # Check if the user is logged in
 if 'Username' not in st.session_state:

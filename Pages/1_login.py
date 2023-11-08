@@ -36,9 +36,8 @@ def login_page():
         result = cursor.fetchall()
         cursor.close()
         connection.close()
-        
-        if result[0] == 1:
-            pro_user = checkforPro(username,cursor)
+        if result[0][0] == 1:
+            pro_user = checkforPro(username)
             st.session_state['is_pro_member'] = pro_user
             st.success("Login successful.")
             st.session_state['Username'] = username
@@ -69,10 +68,14 @@ def sign_up():
             result = cursor.fetchone()
             if result[0] == 1:
                 st.error("Username already exists.")
+                cursor.close()
+                connection.close()
             else:
                 cursor.execute("SELECT add_user(%s, %s, %s, %s)", (username, email, password, hashkey))
                 connection.commit()
                 st.success("Sign up successful. Please log in.")
+                cursor.close()
+                connection.close()
     
 
 def Login_and_signup():

@@ -93,7 +93,7 @@ select * from planned_event;
 -- delete from planned_event where event_id = 'E00004';
 -- insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 -- insert into planned_event values('E00001','COACHELLA','G00004','Spain','2023-10-23','00:00:00','a huge concert to party',0);
-
+-- delete from planned_event where event_id = 'E00004';
 
 create table user_groups(
 	username varchar(20) not null, 
@@ -422,9 +422,54 @@ $$
 DELIMITER ;
 
 
+DELIMITER //
+CREATE PROCEDURE UpdateUserInfo(
+    IN p_username VARCHAR(20),
+    IN p_email VARCHAR(30),
+    IN p_street VARCHAR(30),
+    IN p_city VARCHAR(30),
+    IN p_state VARCHAR(30),
+    IN p_gender ENUM('Male', 'Female', 'Prefer not to say'),
+    IN p_password VARCHAR(20),
+    IN p_about VARCHAR(50)
+)
+BEGIN
+    UPDATE users
+    SET 
+        email_id = p_email,
+        street = p_street,
+        city = p_city,
+        state = p_state,
+        gender = p_gender,
+        about = p_about,
+        password = p_password
+    WHERE username = p_username ;
+    commit;
+    select 1 as result;
+END //
+DELIMITER ;
 
+drop procedure UpdateUserInfo;
+call UpdateUserInfo('Ramesh','rameshwar', 'Street', 'City', 'State', 'Male', 'bananas123', 'About');
+select * from users where username = 'ramesh';
 
--- Triggers 
+DELIMITER $$
+CREATE PROCEDURE DeleteEventByEventID(
+    IN p_event_id VARCHAR(10)
+)
+BEGIN
+    DELETE FROM planned_event
+    WHERE event_id = p_event_id;
+    COMMIT;
+END  
+$$
+DELIMITER ;
+drop procedure DeleteEventByEventId;
+call  DeleteEventByEventId("E00001");
+select * from 	planned_event;
+insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
+
+Triggers 
 
 DELIMITER $$
 CREATE TRIGGER update_member_count
@@ -465,6 +510,5 @@ $$
 DELIMITER ;
 
 select hashkey from users where username = 'disha';
-
 
 

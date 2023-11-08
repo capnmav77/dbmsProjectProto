@@ -33,6 +33,7 @@ def display_group_requests(request):
             cursor.execute(f"CALL accept_group_request('{reqGroup}','{reqUser}');")
             response  = cursor.fetchall()
             cursor.close()
+            connection.close()
             st.text(response)
             # Mark the request as processed
             reqUser = None
@@ -44,6 +45,7 @@ def display_group_requests(request):
             cursor.execute(f"DELETE FROM group_requests WHERE group_id = '{reqGroup}' AND username = '{reqUser}';")
             cursor.close()
             connection.commit()
+            connection.close()
             st.text('Request rejected')
             # Mark the request as processed
             reqUser = None
@@ -58,6 +60,7 @@ def get_group_requests(group_id):
     cursor.execute(f"call get_group_requests('{group_id}')")
     result = cursor.fetchall()
     cursor.close()
+    connection.close()
     if result:
         for it in result:
             print(it)
@@ -76,6 +79,8 @@ def get_group_details(group_id):
     cursor = connection.cursor()
     cursor.execute(f"call get_group_details('{group_id}')")
     result = cursor.fetchall()
+    cursor.close()
+    connection.close()
     #print(result)
     display_group_details(result[0]) #result is a list of lists, so we need to pass in the first element of the list
 
@@ -102,12 +107,15 @@ def get_group_events(group_id):
     cursor = connection.cursor()
     cursor.execute(f"call get_group_events('{group_id}')")
     result = cursor.fetchall()
+    cursor.close()
+    connection.close()
     st.subheader("Group Events")
     #print(result)
     if result == []:
         st.warning("There are no events in this group.")
     else:
-        display_event_details(result[0])
+        for event in result:
+            display_event_details(event)
 
 
 def GroupsPage(User1):
@@ -138,8 +146,6 @@ def GroupsPage(User1):
 
     else:
         st.warning("You have no groups to select from.")
-
-
 
 
 # Check if the user is logged in

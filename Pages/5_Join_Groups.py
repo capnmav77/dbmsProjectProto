@@ -31,6 +31,8 @@ def get_pending_requests(User1):
     cursor = connection.cursor()
     cursor.execute(f"select  group_id as dId ,ho_group_name as gName , admin_name as adName , member_count as MC from  group_requests as gr join ho_group as jg where gr.group_id = jg.ho_group_id and gr.username = '{User1}';")
     result = cursor.fetchall()
+    cursor.close()
+    connection.close()
     # print(result)
     if(len(result)==0):
         st.text("No pending requests")
@@ -44,6 +46,7 @@ def check_group_exists(groupName):
     cursor.execute(f"select check_group_exists('{groupName}')")
     result = cursor.fetchone()
     cursor.close()
+    connection.close()
     if result[0] == 1:
         return 1
     else :
@@ -60,6 +63,8 @@ def joinGroupsPage(User1):
             cursor = connection.cursor()
             cursor.execute(f"call add_group_requests('{userGroupId}','{User1}');")
             response = cursor.fetchall()
+            cursor.close()
+            connection.close()
             
             st.text(response[0][0])
 

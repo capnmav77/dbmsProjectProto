@@ -18,13 +18,17 @@ def connect_to_database():
         st.error(f"Error: {e}")
         return None
     
-def update_user_info(email,street,city,state,gender,password,about,new_password_updation = False):
-    if(new_password_updation == True):
-        st.text("updated password with user info")
-        #code for changing user information
-    else:
-        st.text("Updated user_info")
-        #code for changing user information with password
+# Function to update user information in the database
+def update_user_info(username, email, Street, City, State, Gender, Password, About, new_password_updation=False):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+
+    # Call the stored procedure with the provided parameters
+    cursor.callproc("UpdateUserInfo", (username, email, Street, City, State, Gender, Password, About))  
+    cursor.close()
+    connection.close()
+    st.success("User information updated successfully.")
+
 
 def check_hash():
     hashkey = st.text_input("Enter your Hashkey")
@@ -35,6 +39,8 @@ def check_hash():
         cursor = connection.cursor()
         cursor.execute("call checkHash(%s,%s)",(User1, hashkey) )
         result= cursor.fetchone()
+        cursor.close()
+        connection.close()
         print(result[0])
         if(result[0]==1):
             st.text("You are now a Pro user!")
@@ -42,7 +48,7 @@ def check_hash():
         else:
             st.warning("Wrong Hashkey")
 
-def display_user_prof(user_info):
+def display_user_prof(User1,user_info):
 
     email =  st.text_input('Email',user_info[1])
     Street = st.text_input('Street',user_info[2])
@@ -66,9 +72,9 @@ def display_user_prof(user_info):
             if(Password != Password2):
                 st.warning("New Passwords do not match")
             else:
-                update_user_info(email,Street,City,State,Gender,Password,About,new_password_updation=True)
+                update_user_info(User1 ,email,Street,City,State,Gender,Password,About,new_password_updation=True)
         else:
-            update_user_info(email,Street,City,State,Gender,Password,About,new_password_updation=False)
+            update_user_info(User1,email,Street,City,State,Gender,Password,About,new_password_updation=False)
 
 
 def ProfilePage(User1):
@@ -77,8 +83,9 @@ def ProfilePage(User1):
     cursor = connection.cursor()
     cursor.execute(f"SELECT * FROM users WHERE username = '{User1}'")
     result = cursor.fetchall()
+    cursor.close()
     connection.close()
-    display_user_prof(result[0])
+    display_user_prof(User1,result[0])
             
 
 
@@ -89,8 +96,7 @@ if 'Username' not in st.session_state:
 User1 = st.session_state['Username']
 
 if User1 != "":
-    ProfilePage(User1)
-    
+    ProfilePage(User1)  
     
 else:
     st.warning("You need to log in to access this page.")
