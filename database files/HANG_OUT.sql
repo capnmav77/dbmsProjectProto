@@ -27,6 +27,12 @@ create table interests(
     primary key (interest_id)
 );
 -- drop table interests;
+select * from interests order by interest_id;
+insert into interests values('I009','Adventure Outing','explore the wilderness');
+insert into interests values('I008','Scenery','a long drive for tranquility and peace');
+insert into interests values('I007','Library','Focus spaces');
+insert into interests values('I006','Arcade','have fun by showing off your skills');
+insert into interests values('I005','Resto&Bar','Hangout loosely here!');
 insert into interests values('I004','Food','Yum');
 insert into interests values('I003','Sports','Stress your bod to the limit');
 insert into interests values('I001','general','a general place to visit');
