@@ -449,24 +449,24 @@ BEGIN
 END //
 DELIMITER ;
 
-drop procedure UpdateUserInfo;
-call UpdateUserInfo('Ramesh','rameshwar', 'Street', 'City', 'State', 'Male', 'bananas123', 'About');
+-- drop procedure UpdateUserInfo;
+-- call UpdateUserInfo('Ramesh','rameshwar', 'Street', 'City', 'State', 'Male', 'bananas123', 'About');
 select * from users where username = 'ramesh';
 
 DELIMITER $$
-CREATE PROCEDURE DeleteEventByEventID(
-    IN p_event_id VARCHAR(10)
-)
-BEGIN
-    DELETE FROM planned_event
-    WHERE event_id = p_event_id;
-    COMMIT;
-END  
-$$
-DELIMITER ;
-drop procedure DeleteEventByEventId;
-call  DeleteEventByEventId("E00001");
-select * from 	planned_event;
+-- CREATE PROCEDURE DeleteEventByEventID(
+--     IN p_event_id VARCHAR(10)
+-- )
+-- BEGIN
+--     DELETE FROM planned_event
+--     WHERE event_id = p_event_id;
+--     COMMIT;
+-- END  
+-- $$
+-- DELIMITER ;
+-- drop procedure DeleteEventByEventId;
+-- call  DeleteEventByEventId("E00001");
+-- select * from 	planned_event;
 insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 
 Triggers 

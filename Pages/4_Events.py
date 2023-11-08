@@ -72,16 +72,15 @@ def DeleteEvent(User1):
         selected_event_name = selected_event.split(' - ')[0]
         selected_event_date = selected_event.split(' - ')[2].split(' ')[0]
         selected_event_time = selected_event.split(' - ')[3]
-        selected_event_id = selected_event.split(' - ')[-1]
+        selected_event_id = selected_event.split(' - ')[-1].strip()  # Use strip() to remove spaces
         print(selected_event_id)
         connection = connect_to_database()
         cursor = connection.cursor()
-        cursor.execute(f"delete from planned_event where event_id = '{selected_event_id}';")
+        cursor.execute(f"DELETE FROM planned_event WHERE event_id = '{selected_event_id}';")
         connection.commit()
         cursor.close()
         connection.close()
         st.success(f"Event '{selected_event_name}' on {selected_event_date} at {selected_event_time} has been deleted.")
-
 
 def AddEvents(User1):
     st.title("Add Events")
