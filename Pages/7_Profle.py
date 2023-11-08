@@ -2,7 +2,7 @@ import streamlit as st
 import mysql.connector
 from mysql.connector import Error
 import pandas as pd
-
+import random
 
 # Establish a connection to the MySQL Server
 def connect_to_database():
@@ -26,6 +26,21 @@ def update_user_info(email,street,city,state,gender,password,about,new_password_
         st.text("Updated user_info")
         #code for changing user information with password
 
+def check_hash():
+    hashkey = st.text_input("Enter your Hashkey")
+    if st.button("Become a Pro Member!"):
+
+        User1 = st.session_state["Username"]
+        connection = connect_to_database()
+        cursor = connection.cursor()
+        cursor.execute("call checkHash(%s,%s)",(User1, hashkey) )
+        result= cursor.fetchone()
+        print(result[0])
+        if(result[0]==1):
+            st.text("You are now a Pro user!")
+            st.session_state['is_pro_member'] = 1
+        else:
+            st.warning("Wrong Hashkey")
 
 def display_user_prof(user_info):
 
@@ -40,15 +55,16 @@ def display_user_prof(user_info):
     Password2 = st.text_input('Password Confirmation',user_info[6], type="password")
     About = st.text_input('About',user_info[7])
     if(user_info[9]==1):
-        st.text("✅ Pro membership activated.")
+        st.text("✅ Pro membership active.")
     else: 
-        st.text("try out the Pro membership")
+        check_hash()
+        
 
         
-    if(st.button('make changes')):
+    if(st.button('Make Changes')):
         if(Password != user_info[6]):
             if(Password != Password2):
-                st.warning("New Passwords don't match try again")
+                st.warning("New Passwords do not match")
             else:
                 update_user_info(email,Street,City,State,Gender,Password,About,new_password_updation=True)
         else:

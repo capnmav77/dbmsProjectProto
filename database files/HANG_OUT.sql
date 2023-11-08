@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS hang_out;
 USE hang_out;
-
+-- drop database hang_out;
 create table users(
     username varchar(20) not null unique, 
     email_id varchar(30) not null unique, 
@@ -12,31 +12,32 @@ create table users(
     about varchar(50) ,
     profile_picture blob,
     is_pro_member bool default false ,
+    hashkey varchar(5) not null, 
     PRIMARY KEY (username)
 );
 select * from users;
-select * from users where username = 'Ramesh';
-insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
-insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
-insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true);
+
+insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,11111);
+insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,22222);
+insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,33333);
 
 create table interests(
-    interest_id varchar(10) not null unique,
-    interest_name varchar(20) not null,
+    
+    interest_name varchar(20) not null unique,
     interest_desc varchar(50),
-    primary key (interest_id)
+    primary key (interest_name)
 );
 -- drop table interests;
-select * from interests order by interest_id;
-insert into interests values('I009','Adventure Outing','explore the wilderness');
-insert into interests values('I008','Scenery','a long drive for tranquility and peace');
-insert into interests values('I007','Library','Focus spaces');
-insert into interests values('I006','Arcade','have fun by showing off your skills');
-insert into interests values('I005','Resto&Bar','Hangout loosely here!');
-insert into interests values('I004','Food','Yum');
-insert into interests values('I003','Sports','Stress your bod to the limit');
-insert into interests values('I001','general','a general place to visit');
-insert into interests values('I002','concerts','concerts to party into ');
+
+insert into interests values('General','Your go-to hangout spot!');
+insert into interests values('Adventure Outing','Explore the Wilderness');
+insert into interests values('Scenery','A serene long drive');
+insert into interests values('Library','Focus and Study');
+insert into interests values('Arcade','Show your skills!');
+insert into interests values('Clubbing','Hangout loosely here!');
+insert into interests values('Food','Yum!');
+insert into interests values('Sports','Sweat it out!');
+insert into interests values('Concerts','All your favourite artists!');
 
 create table ho_group(
 	ho_group_id varchar(10) not null unique, 
@@ -50,17 +51,17 @@ create table ho_group(
     primary key (ho_group_id),
     foreign key (admin_name) references users(username) 
 );
-select * from ho_group;
-insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
-insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
-insert into ho_group values('G00003','TG-3','just another test group','Ramesh', '2023-10-23', 1,null,0);
-insert into ho_group values('G00004','TG-4','just another test group','Bharath', '2023-10-23', 1,null,0);
-delete from ho_group where ho_group_id = 'G00005';
+-- select * from ho_group;
+-- insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
+-- insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
+-- insert into ho_group values('G00003','TG-3','just another test group','Ramesh', '2023-10-23', 1,null,0);
+-- insert into ho_group values('G00004','TG-4','just another test group','Bharath', '2023-10-23', 1,null,0);
+-- delete from ho_group where ho_group_id = 'G00005';
 
 
 create table vis_locations(
 	location_name varchar(20) not null unique, 
-    location_type varchar(10) default 'I001' not null , #should refer a type of interest
+    location_type varchar(20) default 'General', 
     street VARCHAR(30),
     city VARCHAR(30),
     state VARCHAR(30),
@@ -69,11 +70,11 @@ create table vis_locations(
     location_rating int not null,  
     location_img blob,
     primary key (location_name),
-	foreign key (location_type) references interests(interest_id) on update cascade 
+	foreign key (location_type) references interests(interest_name) 
 );
 select * from vis_locations;
-insert into vis_locations values('Rameshs_house','I001', 'your','fav','home', 'rameshwar77411@gmail.com','its a friendly neighbourhood home' , 5,null);
-insert into vis_locations values('Spain','I002', 'your','fav','country', 'spain@gmail.com','its spain !' , 5, null);
+insert into vis_locations values('Rameshs_house',null,'your','fav','home', 'rameshwar77411@gmail.com','its a friendly neighbourhood home' , 5,null);
+insert into vis_locations values('Spain',null, 'your','fav','country', 'spain@gmail.com','its spain !' , 5, null);
 
 create table planned_event(
 	event_id varchar(10) not null, 
@@ -89,9 +90,9 @@ create table planned_event(
     foreign key (group_id) references ho_group(ho_group_id) on delete CASCADE
 );
 select * from planned_event;
-delete from planned_event where event_id = 'E00004';
-insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
-insert into planned_event values('E00001','COACHELLA','G00004','Spain','2023-10-23','00:00:00','a huge concert to party',0);
+-- delete from planned_event where event_id = 'E00004';
+-- insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
+-- insert into planned_event values('E00001','COACHELLA','G00004','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 
 
 create table user_groups(
@@ -105,22 +106,22 @@ create table user_groups(
 
 
 
-select * from user_groups;
-insert into user_groups values('Ramesh','G00001','2023-10-23');
-insert into user_groups values('Ramesh','G00002','2023-10-23');
-insert into user_groups values('Ramesh','G00003','2023-10-23');
-insert into user_groups values('Bharath','G00004','2023-10-23');
-DELETE FROM user_groups WHERE group_id = 'G00002' AND username = 'Ramesh';
+-- select * from user_groups;
+-- insert into user_groups values('Ramesh','G00001','2023-10-23');
+-- insert into user_groups values('Ramesh','G00002','2023-10-23');
+-- insert into user_groups values('Ramesh','G00003','2023-10-23');
+-- insert into user_groups values('Bharath','G00004','2023-10-23');
+-- DELETE FROM user_groups WHERE group_id = 'G00002' AND username = 'Ramesh';
 -- DELETE FROM user_groups WHERE group_id = 'G00002' AND member_name = 'Zero';
 
-create table group_interests(
-	group_id varchar(10) not NULL, 
-    interest_id varchar(10) not NULL default 'I001', 
-    primary key (group_id,interest_id),
-    foreign key (group_id) references ho_group(ho_group_id) on delete cascade,
-    foreign key (interest_id) references interests(interest_id) on delete cascade
-);
-insert into group_interests values('G00001','I001');
+-- create table group_interests(
+-- 	group_id varchar(10) not NULL, 
+--     interest_id varchar(10) not NULL default 'I001', 
+--     primary key (group_id,interest_id),
+--     foreign key (group_id) references ho_group(ho_group_id) on delete cascade,
+--     foreign key (interest_id) references interests(interest_id) on delete cascade
+-- );
+-- insert into group_interests values('G00001','I001');
 
 
 create table group_requests(
@@ -130,12 +131,12 @@ create table group_requests(
     foreign key (group_id) references ho_group(ho_group_id) on delete cascade,
     foreign key (username) references users(username) on delete cascade
 );
-insert into group_requests values('G00002','Bharath');
-insert into group_requests values('G00002','Zero');
-insert into group_requests values('G00004','Zero');
-insert into group_requests values('G00004','Ramesh');
-select * from group_requests;
-DELETE FROM group_requests WHERE group_id = 'G00002' AND username = 'Ramesh';
+-- insert into group_requests values('G00002','Bharath');
+-- insert into group_requests values('G00002','Zero');
+-- insert into group_requests values('G00004','Zero');
+-- insert into group_requests values('G00004','Ramesh');
+-- select * from group_requests;
+-- DELETE FROM group_requests WHERE group_id = 'G00002' AND username = 'Ramesh';
 
 
 -- Functions 
@@ -212,15 +213,16 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE FUNCTION add_user(uname VARCHAR(255), uemail VARCHAR(255), upassword VARCHAR(255)) RETURNS INT DETERMINISTIC
+CREATE FUNCTION add_user(uname VARCHAR(255), uemail VARCHAR(255), upassword VARCHAR(255), uhashkey varchar(255)) RETURNS INT DETERMINISTIC
 BEGIN
-    INSERT INTO users (username, email_id, password)
-    VALUES (uname, uemail, upassword);
+    INSERT INTO users (username, email_id, password, hashkey)
+    VALUES (uname, uemail, upassword, uhashkey);
     
     RETURN 1;
 END $$;
 
 DELIMITER ;
+
 
 
 
@@ -403,6 +405,23 @@ $$
 
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE checkHash(IN in_username VARCHAR(20), IN in_hashkey VARCHAR(5))
+BEGIN
+    DECLARE user_hashkey VARCHAR(5);
+    SELECT hashkey INTO user_hashkey FROM users WHERE username = in_username;
+    IF user_hashkey = in_hashkey THEN
+        UPDATE users SET is_pro_member = true WHERE username = in_username;
+        commit;
+        SELECT 1 AS Result;
+    ELSE
+        SELECT 0 AS Result;
+    END IF;
+END
+$$
+DELIMITER ;
+
+
 
 
 -- Triggers 
@@ -444,6 +463,8 @@ BEGIN
 END;
 $$
 DELIMITER ;
+
+select hashkey from users where username = 'disha';
 
 
 

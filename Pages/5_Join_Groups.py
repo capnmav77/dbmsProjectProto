@@ -54,7 +54,7 @@ def joinGroupsPage(User1):
     #get user's group req
     st.title("Join Groups")
     userGroupId = st.text_input("Enter the Group ID")
-    if st.button("search and request"):
+    if st.button("Search and Request"):
         if check_group_exists(userGroupId) :
             connection = connect_to_database()
             cursor = connection.cursor()
@@ -64,7 +64,7 @@ def joinGroupsPage(User1):
             st.text(response[0][0])
 
         else:
-            st.text("The group doesn't exists check your group-id")
+            st.text("The group does not exist.")
     get_pending_requests(User1)
 
 

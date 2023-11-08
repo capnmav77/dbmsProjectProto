@@ -91,7 +91,7 @@ if 'Username' not in st.session_state:
     st.session_state["Username"] = ""
 
 if 'is_pro_member' not in st.session_state:
-    st.session_state["is_pro_user"] = 0
+    st.session_state["is_pro_member"] = 0
 
 User1 = st.session_state['Username']
 is_pro_user = st.session_state['is_pro_member']

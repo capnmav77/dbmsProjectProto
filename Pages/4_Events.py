@@ -131,7 +131,7 @@ def AddEvents(User1):
                     st.success("Event added successfully!")
 
                 else:
-                    st.warning("Event already present , check database")
+                    st.warning("Event already exists.")
         else:
             st.error(f"Group '{group_id}' does not exist or you are not the admin of this group.")    
 

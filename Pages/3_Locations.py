@@ -29,9 +29,10 @@ def add_new_location():
     # Fetch available interests from the database
     connection = connect_to_database()
     cursor = connection.cursor()
-    cursor.execute("SELECT interest_id, interest_name FROM interests")
+    cursor.execute("SELECT  interest_name FROM interests ")
     interests = cursor.fetchall()
-    interest_names = [interest[1] for interest in interests]
+    interest_names = [interest[0] for interest in interests]
+    print(interests)
     
     # Create input fields for location details
     location_name = st.text_input("Location Name")
@@ -46,14 +47,14 @@ def add_new_location():
     if st.button("Add Location"):
         # Find the corresponding interest_id for the selected location type
         selected_interest = interests[interest_names.index(location_type)]
-        interest_id = selected_interest[0]
+        
 
         connection = connect_to_database()
         cursor = connection.cursor()
         
         try:
             cursor.execute("INSERT INTO vis_locations (location_name, location_type, street, city, state, location_contact, location_desc, location_rating) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                           (location_name, interest_id, street, city, state, location_contact, location_desc, location_rating))
+                           (location_name, selected_interest[0], street, city, state, location_contact, location_desc, location_rating))
             connection.commit()
             st.success("Location added successfully!")
         except Error as e:
@@ -93,15 +94,22 @@ def update_location():
     cursor = connection.cursor()
     cursor.execute("SELECT location_name FROM vis_locations")
     location_names = [row[0] for row in cursor.fetchall()]
+    result = cursor.fetchall()
+    print(result)
 
-    # Create a dropdown to select the location to update
+    # Create a dropdown to select the location to   update
     selected_location = st.selectbox("Select a location to update:", location_names)
 
     if selected_location:
+         # Fetch available interests from the database
+        cursor.execute("SELECT  interest_name FROM interests ")
+        interests = cursor.fetchall()
+        interest_names = [interest[0] for interest in interests]
+        print(interests)
         # Fetch the current details of the selected location
         cursor.execute("SELECT location_type, street, city, state, location_contact, location_desc, location_rating, location_img FROM vis_locations WHERE location_name = %s", (selected_location,))
         location_data = cursor.fetchone()
-
+        
         # Display the current details of the selected location
         st.subheader(f"Current Details for {selected_location}")
         st.write(f"Location Type: {location_data[0]}")
@@ -115,7 +123,7 @@ def update_location():
 
         # Get user input for the updated details
         st.subheader(f"Update Details for {selected_location}")
-        new_location_type = st.text_input("Location Type", value=location_data[0])
+        new_location_type = st.selectbox("Location Type", interest_names)
         new_street = st.text_input("Street", value=location_data[1])
         new_city = st.text_input("City", value=location_data[2])
         new_state = st.text_input("State", value=location_data[3])
