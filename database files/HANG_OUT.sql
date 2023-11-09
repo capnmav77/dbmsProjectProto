@@ -387,7 +387,7 @@ BEGIN
         WHERE group_id = admin_group_id
         ORDER BY date_joined
         LIMIT 1;
-
+        -- select 1 as result;
         -- Update the group admin name
         UPDATE ho_group
         SET admin_name = longest_member
@@ -397,7 +397,7 @@ BEGIN
         SELECT COUNT(*) INTO member_count
         FROM user_groups
         WHERE group_id = admin_group_id;
-
+        -- commit;
         -- If there are no members left in the group, delete the group
         IF member_count = 0 THEN
             DELETE FROM ho_group WHERE ho_group_id = admin_group_id;
@@ -407,8 +407,7 @@ BEGIN
 END;
 $$
 DELIMITER ;
-
-drop  procedure UpdateGroupAdminAndDeleteGroup ;
+-- drop  procedure UpdateGroupAdminAndDeleteGroup ;
 
 
 DELIMITER $$
@@ -479,6 +478,7 @@ DELIMITER ;
 
 
 ---------------------------------------------------------------------------------
+
 Triggers 
 
 DELIMITER $$

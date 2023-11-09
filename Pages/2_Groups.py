@@ -76,6 +76,8 @@ def display_group_requests(request):
     else:
         st.warning("There are no requests to display")
 
+
+
 def get_group_requests(group_id):
     st.subheader("Join Requests:")
     connection = connect_to_database()
@@ -92,9 +94,11 @@ def get_group_requests(group_id):
         st.warning("There are No requests pending")
  
 
+
 def display_group_details(group_details):
     st.subheader("Group Details")
     st.table(pd.DataFrame([group_details], columns=["Group ID", "Group Name", "Group Description","Group Owner","date created","member count","previously_visited_location","pending Requests"]))
+
 
 
 def get_group_details(group_id):
@@ -167,6 +171,59 @@ def get_group_events(group_id):
             display_event_details(event)
 
 
+def leave_group_user(username,group_id):
+    st.subheader("Leave Group")
+    st.warning("you are about to exit the group")
+    if(st.button("Leave Group")):
+        connection = connect_to_database()
+        cursor = connection.cursor()
+        cursor.execute(f"delete from user_groups where username = '{username}' and group_id = '{group_id}';")
+        connection.commit()
+        cursor.close()
+        connection.close()
+        st.text("You have left the group")
+
+
+def leave_group_admin(username,group_id):
+    st.subheader("Leave Group")
+    st.warning("Since you are the admin, select the next user for the group")
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute(f"select * from user_groups where group_id = '{group_id}';")
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    members = [member[0] for member in result]
+    print(username)
+    members.remove(username)
+    next_group_admin = st.selectbox("Select the next admin",members)
+    print(members)
+    if(len(members) == 0):
+        st.warning("Since there are no members in the group , directly delete the group")
+    else:
+        if(st.button("Change Admin")):
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            cursor.execute(f"update ho_group set admin_name = '{next_group_admin}' where ho_group_id = '{group_id}';")
+            connection.commit()
+            cursor.close()
+            st.text("Admin changed successfully")
+    
+        if(st.button("Change Admin and Leave Group")):
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            cursor.execute(f"update ho_group set admin_name = '{next_group_admin}' where ho_group_id = '{group_id}';")
+            connection.commit()
+            cursor.close()
+            cursor = connection.cursor()
+            cursor.execute(f"delete from user_groups where username = '{username}' and group_id = '{group_id}';")
+            connection.commit()
+            cursor.close()
+            connection.close()
+            st.text("You have left the group")
+
+
+
 def GroupsPage(User1):
     st.text(f"Welcome, {User1}")
     
@@ -194,13 +251,19 @@ def GroupsPage(User1):
         # Display the group details
         get_group_details(selected_group_id)
         if(selected_group_admin == User1):
-            Choice = st.radio("Choose", ("View Group Events","View Group Requests" ))
+            Choice = st.radio("Choose", ("View Group Events","View Group Requests","Leave Group" ))
             if Choice == "View Group Events":
                 get_group_events(selected_group_id)
+            elif (Choice == "Leave Group") :
+                leave_group_admin(User1,selected_group_id)
             else:
                 get_group_requests(selected_group_id)
         else:
-            get_group_events(selected_group_id)
+            choice = st.radio("Choose", ("View Group Events","Leave Group" ))
+            if choice == "View Group Events":
+                get_group_events(selected_group_id)
+            else :
+                leave_group_user(User1,selected_group_id)
 
     else:
         st.warning("You have no groups to select from.")
