@@ -227,8 +227,6 @@ END $$;
 DELIMITER ;
 
 
-
-
 -- Procedures
 
 -- a procedure to add the user to the group on approval of the group admin 
@@ -303,6 +301,7 @@ $$
 DELIMITER ;
 CALL get_group_events('G00001');
 drop procedure get_group_events;
+
 
 #Procedure to get group_details 
 DELIMITER $$
@@ -520,5 +519,4 @@ $$
 DELIMITER ;
 
 select hashkey from users where username = 'disha';
-
-
+call UpdateGroupAdminAndDeleteGroup('jonedoe');

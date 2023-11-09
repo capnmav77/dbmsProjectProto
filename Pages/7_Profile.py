@@ -85,6 +85,7 @@ def deleteUser(User1):
         if(confirmation == "DELETE"):
             # connection = connect_to_database()
             # cursor = connection.cursor()
+            # cursor.execute(f"call UpdateGroupAdminAndDeleteGroup('{User1}')")
             # cursor.execute(f"DELETE FROM users WHERE username = '{User1}'")
             # connection.commit()
             # cursor.close()

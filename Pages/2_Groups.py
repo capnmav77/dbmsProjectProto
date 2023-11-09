@@ -112,6 +112,19 @@ def display_event_details(event_details):
     event_container = st.container()
     
     with event_container:
+        st.markdown(
+            """
+            <style>
+            .event-container {
+                background-color: #ffffff;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
         st.title(event_details[1])
         
         # Format the date and time
