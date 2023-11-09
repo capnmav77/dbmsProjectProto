@@ -77,6 +77,24 @@ def display_user_prof(User1,user_info):
             update_user_info(User1,email,Street,City,State,Gender,Password,About,new_password_updation=False)
 
 
+
+def deleteUser(User1):
+    st.warning("Are you sure you want to delete your profile? This action cannot be undone.")
+    confirmation = st.text_input("Type 'DELETE' to confirm")
+    if(st.button("Confirm")):
+        if(confirmation == "DELETE"):
+            # connection = connect_to_database()
+            # cursor = connection.cursor()
+            # cursor.execute(f"DELETE FROM users WHERE username = '{User1}'")
+            # connection.commit()
+            # cursor.close()
+            # connection.close()
+            st.success("Your profile has been deleted.")
+            st.session_state["Username"] = ""
+            st.session_state["is_pro_member"] = 0
+        else:
+            st.text("couldn't delete profile")
+
 def ProfilePage(User1):
     st.subheader(f"Hey, {User1}, feel like changing your profile?")
     connection = connect_to_database()
@@ -96,7 +114,11 @@ if 'Username' not in st.session_state:
 User1 = st.session_state['Username']
 
 if User1 != "":
-    ProfilePage(User1)  
+    choice = st.radio("choose an option",("View Profile","Delete Profile"))
+    if choice == "Delete Profile":
+        deleteUser(User1)
+    else:
+        ProfilePage(User1)  
     
 else:
     st.warning("You need to log in to access this page.")

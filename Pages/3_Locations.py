@@ -26,13 +26,29 @@ def fetch_location_details():
 def add_new_location():
     with connect_to_database() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT  interest_name FROM interests ")
+            cursor.execute("SELECT interest_name , interest_desc FROM interests ")
             interests = cursor.fetchall()
             interest_names = [interest[0] for interest in interests]
+            interest_descs = [interest[1] for interest in interests]
 
         location_name = st.text_input("Location Name")
+        if location_name:
+            #check for ' in the location name
+            if "'" in location_name:
+                st.error("Location name cannot contain '")
+                return
+            #check if location already exists
+            with connect_to_database() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT location_name FROM vis_locations")
+                    location_names = [row[0] for row in cursor.fetchall()]
+            if location_name in location_names:
+                st.error("Location already exists")
+                return
+            
+        
         location_type = st.selectbox("Location Type", interest_names)
-        street = st.text_input("Street Address")
+        street = st.text_input("Street")
         city = st.text_input("City")
         state = st.text_input("State")
         location_contact = st.text_input("Contact")
@@ -68,6 +84,8 @@ def delete_location():
                         st.success(f"Location '{selected_location_name}' has been deleted.")
                     except Error as e:
                         st.error(f"Error: {e}")
+
+
 
 def update_location():
     st.warning("Select a location to update from the list below.")
@@ -114,6 +132,8 @@ def update_location():
                                    (new_location_type, new_street, new_city, new_state, new_location_contact, new_location_desc, new_location_rating, selected_location))
                     connection.commit()
                     st.success(f"{selected_location} has been updated successfully!")
+
+
 
 def LocationPage(User1):
     st.title("Location Page")

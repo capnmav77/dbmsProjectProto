@@ -18,7 +18,8 @@ def connect_to_database():
     except Error as e:
         st.error(f"Error: {e}")
         return None
-    
+
+
 
 def get_latest_id():
     connection = connect_to_database()
@@ -85,6 +86,8 @@ def DeleteEvent(User1):
         cursor.close()
         connection.close()
         st.success(f"Event '{selected_event_name}' on {selected_event_date} at {selected_event_time} has been deleted.")
+
+
 
 def AddEvents(User1):
     st.title("Add Events")
@@ -171,6 +174,8 @@ def AddEvents(User1):
             connection.close()   
 
 
+
+
 def update_event(User1):
     st.subheader("Update Event")
 
@@ -205,6 +210,10 @@ def update_event(User1):
 
     cursor.close()
     connection.close()
+
+
+
+
 
 # Check if the user is logged in
 if 'Username' not in st.session_state:

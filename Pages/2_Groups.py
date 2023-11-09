@@ -2,6 +2,7 @@ import streamlit as st
 import mysql.connector
 from mysql.connector import Error
 import pandas as pd
+from datetime import datetime
 
 
 # Establish a connection to the MySQL Server
@@ -18,6 +19,18 @@ def connect_to_database():
         st.error(f"Error: {e}")
         return None
     
+
+
+def current_date():
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("SELECT CURDATE()")
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return result[0]
+
+
 
 def display_group_requests(request):
     reqUser = request[1]
@@ -100,12 +113,25 @@ def display_event_details(event_details):
     
     with event_container:
         st.title(event_details[1])
-        st.text("Event Location: " + event_details[2])
         
         # Format the date and time
         event_date = event_details[3].strftime("%Y-%m-%d")
         event_time = event_details[4].total_seconds() / 3600  # Convert timedelta to hours
+
+        curr_date = current_date().strftime("%Y-%m-%d")
+        curr_datetime = datetime.strptime(curr_date, "%Y-%m-%d")
+        event_datetime = datetime.strptime(event_date, "%Y-%m-%d")
         
+        if curr_datetime > event_datetime:
+            st.warning("This event has already passed, deleting event... ")
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            cursor.execute(f"DELETE FROM planned_event WHERE event_id = '{event_details[0]}'")
+            connection.commit()
+            cursor.close()
+            connection.close()
+        
+        st.text("Event Location: " + event_details[2])
         st.text(f"Event Date: {event_date}")
         st.text(f"Event Time: {event_time} hours")
         
@@ -120,7 +146,7 @@ def get_group_events(group_id):
     cursor.close()
     connection.close()
     st.subheader("Group Events")
-    #print(result)
+    print(result)
     if result == []:
         st.warning("There are no events in this group.")
     else:

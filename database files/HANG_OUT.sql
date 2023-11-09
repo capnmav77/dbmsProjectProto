@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS hang_out;
 USE hang_out;
+
 -- drop database hang_out;
 create table users(
     username varchar(20) not null unique, 
@@ -16,7 +17,7 @@ create table users(
     PRIMARY KEY (username)
 );
 select * from users;
-
+delete from users where username  = 'jonedoe';
 insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,11111);
 insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,22222);
 insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,33333);
@@ -50,8 +51,9 @@ create table ho_group(
     previously_visited_loc varchar(10) ,
     pending_requests int default 0 not null ,
     primary key (ho_group_id),
-    foreign key (admin_name) references users(username) 
+    foreign key (admin_name) references users(username)
 );
+ALTER TABLE ho_group MODIFY admin_name varchar(20) NULL;
 select * from ho_group;
 insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
@@ -294,12 +296,13 @@ CREATE PROCEDURE get_group_events(IN curr_group_id varchar(10))
 BEGIN
 	select event_id , event_name , location_name , event_date , event_time , event_desc , pollx
     from planned_event 
-    where planned_event.group_id = curr_group_id ;
+    where planned_event.group_id = curr_group_id 
+    order by event_date;
 END
 $$ 
 DELIMITER ;
-#CALL get_group_events('G00001');
-
+CALL get_group_events('G00001');
+drop procedure get_group_events;
 
 #Procedure to get group_details 
 DELIMITER $$
@@ -361,8 +364,8 @@ DELIMITER ;
 -- drop procedure add_group_requests;
 -- call add_group_requests('G00001','Zero');
 -- select * from group_requests;
-select * from group_requests;
-select * from user_groups;
+-- select * from group_requests;
+-- select * from user_groups;
 -- call add_group_requests('G00003','Bharath');
 
 DELIMITER $$
@@ -401,10 +404,13 @@ BEGIN
             DELETE FROM ho_group WHERE ho_group_id = admin_group_id;
         END IF;
     END IF;
+	commit ;
 END;
 $$
-
 DELIMITER ;
+
+drop  procedure UpdateGroupAdminAndDeleteGroup ;
+
 
 DELIMITER $$
 CREATE PROCEDURE checkHash(IN in_username VARCHAR(20), IN in_hashkey VARCHAR(5))
@@ -423,7 +429,7 @@ $$
 DELIMITER ;
 
 
-DELIMITER //
+DELIMITER $$
 CREATE PROCEDURE UpdateUserInfo(
     IN p_username VARCHAR(20),
     IN p_email VARCHAR(30),
@@ -447,14 +453,15 @@ BEGIN
     WHERE username = p_username ;
     commit;
     select 1 as result;
-END //
+END $$
 DELIMITER ;
 
 -- drop procedure UpdateUserInfo;
 -- call UpdateUserInfo('Ramesh','rameshwar', 'Street', 'City', 'State', 'Male', 'bananas123', 'About');
-select * from users where username = 'ramesh';
+-- select * from users where username = 'ramesh';
 
-DELIMITER $$
+
+-- DELIMITER $$
 -- CREATE PROCEDURE DeleteEventByEventID(
 --     IN p_event_id VARCHAR(10)
 -- )
@@ -466,10 +473,13 @@ DELIMITER $$
 -- $$
 -- DELIMITER ;
 -- drop procedure DeleteEventByEventId;
-call  DeleteEventByEventId("E00001");
+-- call  DeleteEventByEventId("E00001");
 -- select * from 	planned_event;
-insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
+-- Delimiter ;
+-- insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 
+
+---------------------------------------------------------------------------------
 Triggers 
 
 DELIMITER $$
@@ -500,7 +510,6 @@ DELIMITER ;
 
 
 DELIMITER $$
-
 CREATE TRIGGER after_delete_user
 AFTER DELETE ON users
 FOR EACH ROW
