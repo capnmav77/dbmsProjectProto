@@ -2,6 +2,7 @@ import mysql.connector
 import streamlit as st
 from mysql.connector import Error
 import random
+
 # Establish a connection to the MySQL Server
 def connect_to_database():
     try:

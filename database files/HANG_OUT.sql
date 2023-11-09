@@ -39,6 +39,7 @@ insert into interests values('Food','Yum!');
 insert into interests values('Sports','Sweat it out!');
 insert into interests values('Concerts','All your favourite artists!');
 
+
 create table ho_group(
 	ho_group_id varchar(10) not null unique, 
     ho_group_name varchar(20) not null, 
@@ -51,8 +52,8 @@ create table ho_group(
     primary key (ho_group_id),
     foreign key (admin_name) references users(username) 
 );
--- select * from ho_group;
--- insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
+select * from ho_group;
+insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00003','TG-3','just another test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00004','TG-4','just another test group','Bharath', '2023-10-23', 1,null,0);
@@ -266,13 +267,13 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE get_user_groups(IN user_name VARCHAR(20))
 BEGIN
-	select ho_group_id as Groupid , ho_group_name as Groupname
+	select ho_group_id as Groupid , ho_group_name as Groupname , admin_name 
     from ho_group join user_groups on ho_group.ho_group_id = user_groups.group_id
     where user_groups.username = user_name ;
 END
 $$
 DELIMITER ;
-#drop procedure get_user_groups;
+drop procedure get_user_groups;
 #call get_user_groups('Bharath');
 
 
@@ -465,7 +466,7 @@ DELIMITER $$
 -- $$
 -- DELIMITER ;
 -- drop procedure DeleteEventByEventId;
--- call  DeleteEventByEventId("E00001");
+call  DeleteEventByEventId("E00001");
 -- select * from 	planned_event;
 insert into planned_event values('E00001','COACHELLA','G00001','Spain','2023-10-23','00:00:00','a huge concert to party',0);
 

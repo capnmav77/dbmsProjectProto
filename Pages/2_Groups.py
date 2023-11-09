@@ -27,31 +27,41 @@ def display_group_requests(request):
         key = f'{reqUser}-{reqGroup}'
         st.text("User name: " + reqUser + " is requesting to join this group")
 
-        if st.button(f"Accept", key=f'A-{key}'):
-            connection = connect_to_database()
-            cursor = connection.cursor()
-            cursor.execute(f"CALL accept_group_request('{reqGroup}','{reqUser}');")
-            response  = cursor.fetchall()
-            cursor.close()
-            connection.close()
+        #making the accept and reject buttons in the same row
+        column1 , column2 = st.columns(2)
+        response = None
+
+        with column1:
+            if st.button(f"Accept", key=f'A-{key}'):
+                connection = connect_to_database()
+                cursor = connection.cursor()
+                cursor.execute(f"CALL accept_group_request('{reqGroup}','{reqUser}');")
+                response  = cursor.fetchall()
+                cursor.close()
+                connection.close()
+                response = "Request accepted"
+                # st.text(response)
+                # # Mark the request as processed
+                reqUser = None
+                reqGroup = None
+            
+        with column2:
+            if st.button(f"Reject", key=f'R-{key}'):
+                connection = connect_to_database()
+                cursor = connection.cursor()
+                cursor.execute(f"DELETE FROM group_requests WHERE group_id = '{reqGroup}' AND username = '{reqUser}';")
+                cursor.close()
+                connection.commit()
+                connection.close()
+                response = "Request rejected"
+                # st.text('Request rejected')
+                # # Mark the request as processed
+                reqUser = None
+                reqGroup = None
+        if(response != None):
             st.text(response)
-            # Mark the request as processed
-            reqUser = None
-            reqGroup = None
-
-        if st.button(f"Reject", key=f'R-{key}'):
-            connection = connect_to_database()
-            cursor = connection.cursor()
-            cursor.execute(f"DELETE FROM group_requests WHERE group_id = '{reqGroup}' AND username = '{reqUser}';")
-            cursor.close()
-            connection.commit()
-            connection.close()
-            st.text('Request rejected')
-            # Mark the request as processed
-            reqUser = None
-            reqGroup = None
-           
-
+    else:
+        st.warning("There are no requests to display")
 
 def get_group_requests(group_id):
     st.subheader("Join Requests:")
@@ -126,23 +136,32 @@ def GroupsPage(User1):
     cursor = connection.cursor()
     cursor.execute(f"call get_user_groups('{User1}')")
     result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    
     #print(result)
-    #creating a dropdown menu for the user to select a group
-    # Extract group names from the results
+    #creating a dropdown menu for the user to select a group and Extract group names from the results
+
     group_names = [group[1] for group in result]
+
     
     if group_names:
         # Create a selectbox with group names
         selected_group_name = st.selectbox("Your Groups :", group_names)
 
         selected_group_id = [group[0] for group in result if group[1] == selected_group_name][0]
-
+        selected_group_admin = [group[2] for group in result if group[1] == selected_group_name][0]
+        
+        # Display the group details
         get_group_details(selected_group_id)
-        Choice = st.radio("Choose", ("View Group Events","View Group Requests" ))
-        if Choice == "View Group Events":
-            get_group_events(selected_group_id)
+        if(selected_group_admin == User1):
+            Choice = st.radio("Choose", ("View Group Events","View Group Requests" ))
+            if Choice == "View Group Events":
+                get_group_events(selected_group_id)
+            else:
+                get_group_requests(selected_group_id)
         else:
-            get_group_requests(selected_group_id)
+            get_group_events(selected_group_id)
 
     else:
         st.warning("You have no groups to select from.")

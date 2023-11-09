@@ -42,7 +42,7 @@ def check_hash():
         cursor.close()
         connection.close()
         print(result[0])
-        if(result[0]==1):
+        if(result[0]):
             st.text("You are now a Pro user!")
             st.session_state['is_pro_member'] = 1
         else:
@@ -60,7 +60,7 @@ def display_user_prof(User1,user_info):
     Password = st.text_input('Password',user_info[6],type="password")
     Password2 = st.text_input('Password Confirmation',user_info[6], type="password")
     About = st.text_input('About',user_info[7])
-    if(user_info[9]==1):
+    if(user_info[9]):
         st.text("✅ Pro membership active.")
     else: 
         check_hash()
