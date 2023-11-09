@@ -20,7 +20,6 @@ def connect_to_database():
         return None
     
 
-
 def current_date():
     connection = connect_to_database()
     cursor = connection.cursor()
@@ -29,7 +28,6 @@ def current_date():
     cursor.close()
     connection.close()
     return result[0]
-
 
 
 def display_group_requests(request):

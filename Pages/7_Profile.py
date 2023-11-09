@@ -115,11 +115,7 @@ if 'Username' not in st.session_state:
 User1 = st.session_state['Username']
 
 if User1 != "":
-    choice = st.radio("choose an option",("View Profile","Delete Profile"))
-    if choice == "Delete Profile":
-        deleteUser(User1)
-    else:
-        ProfilePage(User1)  
-    
+    ProfilePage(User1)
+
 else:
     st.warning("You need to log in to access this page.")
