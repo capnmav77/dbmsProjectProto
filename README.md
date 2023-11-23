@@ -17,9 +17,9 @@ A detailed description of the project, including its purpose and features.
 
 ## Installation
 
-<!-- run git clone https://github.com/capnmav77/dbmsProjectProto.git -->
-<!-- and then just install the required dependencies -->
-<!-- run : streamlit run Home.py -->
+run git clone https://github.com/capnmav77/dbmsProjectProto.git -->
+and then just install the required dependencies
+run : streamlit run Home.py
 
 ## Usage
 
