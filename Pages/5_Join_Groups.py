@@ -29,7 +29,7 @@ def display_requests(requests):
 def get_pending_requests(User1):
     connection = connect_to_database()
     cursor = connection.cursor()
-    cursor.execute(f"select  group_id as dId ,ho_group_name as gName , admin_name as adName , member_count as MC from  group_requests as gr join ho_group as jg where gr.group_id = jg.ho_group_id and gr.username = '{User1}';")
+    cursor.execute(f"select group_id as dId ,ho_group_name as gName , admin_name as adName , member_count as MC from  group_requests as gr join ho_group as jg where gr.group_id = jg.ho_group_id and gr.username = '{User1}';")
     result = cursor.fetchall()
     cursor.close()
     connection.close()

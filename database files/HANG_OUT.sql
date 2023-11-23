@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS hang_out;
 USE hang_out;
 
--- drop database hang_out;
+
 create table users(
     username varchar(20) not null unique, 
     email_id varchar(30) not null unique, 
@@ -16,29 +16,28 @@ create table users(
     hashkey varchar(5) not null, 
     PRIMARY KEY (username)
 );
-select * from users;
-delete from users where username  = 'jonedoe';
-insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,11111);
-insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,22222);
-insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,33333);
+-- select * from users;
+-- delete from users where username  = 'jonedoe';
+-- insert into users values('Ramesh','rameshwar77411@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,11111);
+-- insert into users values('Bharath','bharath@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,22222);
+-- insert into users values('Zero','Zero@gmail.com','cambridge road','bangalore','karnataka','Male','bananas123','nothing much to say', null,true,33333);
 
 create table interests(
-    
     interest_name varchar(20) not null unique,
     interest_desc varchar(50),
     primary key (interest_name)
 );
 -- drop table interests;
 
-insert into interests values('General','Your go-to hangout spot!');
-insert into interests values('Adventure Outing','Explore the Wilderness');
-insert into interests values('Scenery','A serene long drive');
-insert into interests values('Library','Focus and Study');
-insert into interests values('Arcade','Show your skills!');
-insert into interests values('Clubbing','Hangout loosely here!');
-insert into interests values('Food','Yum!');
-insert into interests values('Sports','Sweat it out!');
-insert into interests values('Concerts','All your favourite artists!');
+-- insert into interests values('General','Your go-to hangout spot!');
+-- insert into interests values('Adventure Outing','Explore the Wilderness');
+-- insert into interests values('Scenery','A serene long drive');
+-- insert into interests values('Library','Focus and Study');
+-- insert into interests values('Arcade','Show your skills!');
+-- insert into interests values('Clubbing','Hangout loosely here!');
+-- insert into interests values('Food','Yum!');
+-- insert into interests values('Sports','Sweat it out!');
+-- insert into interests values('Concerts','All your favourite artists!');
 
 
 create table ho_group(
@@ -53,9 +52,9 @@ create table ho_group(
     primary key (ho_group_id),
     foreign key (admin_name) references users(username)
 );
-ALTER TABLE ho_group MODIFY admin_name varchar(20) NULL;
-select * from ho_group;
-insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
+-- ALTER TABLE ho_group MODIFY admin_name varchar(20) NULL;
+-- select * from ho_group;
+-- insert into ho_group values('G00001','Test-group','just a test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00002','TG-2','just another test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00003','TG-3','just another test group','Ramesh', '2023-10-23', 1,null,0);
 -- insert into ho_group values('G00004','TG-4','just another test group','Bharath', '2023-10-23', 1,null,0);
@@ -75,9 +74,9 @@ create table vis_locations(
     primary key (location_name),
 	foreign key (location_type) references interests(interest_name) 
 );
-select * from vis_locations;
-insert into vis_locations values('Rameshs_house',null,'your','fav','home', 'rameshwar77411@gmail.com','its a friendly neighbourhood home' , 5,null);
-insert into vis_locations values('Spain',null, 'your','fav','country', 'spain@gmail.com','its spain !' , 5, null);
+-- select * from vis_locations;
+-- insert into vis_locations values('Rameshs_house',null,'your','fav','home', 'rameshwar77411@gmail.com','its a friendly neighbourhood home' , 5,null);
+-- insert into vis_locations values('Spain',null, 'your','fav','country', 'spain@gmail.com','its spain !' , 5, null);
 
 create table planned_event(
 	event_id varchar(10) not null, 
@@ -178,6 +177,7 @@ $$
 DELIMITER ;
 #select check_isprouser('Ramesh');
 
+
 DELIMITER $$
 CREATE FUNCTION check_group_exists(in_group_id varchar(10))
 RETURNS BOOLEAN DETERMINISTIC
@@ -196,8 +196,8 @@ $$
 DELIMITER ;
 #select check_group_exists('G00001');
 
-DELIMITER $$
 
+DELIMITER $$
 CREATE FUNCTION check_username(uname VARCHAR(255)) RETURNS INT DETERMINISTIC
 BEGIN
     DECLARE user_exists INT;
@@ -235,11 +235,9 @@ CREATE PROCEDURE accept_group_request(IN in_group_id VARCHAR(10), IN in_username
 BEGIN
     DECLARE request_exists INT;
 
-    -- Check if the request exists
     SELECT COUNT(*) INTO request_exists FROM group_requests
     WHERE group_id = in_group_id AND username = in_username;
 
-    -- If the request exists, add the user to the group and remove the request
     IF request_exists = 1 THEN
         INSERT INTO user_groups (username, group_id, date_joined)
         VALUES (in_username, in_group_id, CURDATE());
@@ -260,8 +258,8 @@ BEGIN
 END
 $$
 DELIMITER ;
--- drop procedure accept_group_request ;
-#call accept_group_request('G00002','Bharath');
+-- -- drop procedure accept_group_request ;
+-- #call accept_group_request('G00002','Bharath');
 
 
 DELIMITER $$
@@ -273,8 +271,8 @@ BEGIN
 END
 $$
 DELIMITER ;
-drop procedure get_user_groups;
-#call get_user_groups('Bharath');
+-- drop procedure get_user_groups;
+-- #call get_user_groups('Bharath');
 
 
 #getting groups with user as the admin : 
@@ -286,8 +284,8 @@ BEGIN
     where ug.username = user_name and ho.admin_name = user_name;
 END
 $$
-DELIMITER ;
-#call get_admin_groups('Bharath');
+-- DELIMITER ;
+-- #call get_admin_groups('Bharath');
 
 DELIMITER $$
 CREATE PROCEDURE get_group_events(IN curr_group_id varchar(10))
@@ -299,8 +297,8 @@ BEGIN
 END
 $$ 
 DELIMITER ;
-CALL get_group_events('G00001');
-drop procedure get_group_events;
+-- CALL get_group_events('G00001');
+-- drop procedure get_group_events;
 
 
 #Procedure to get group_details 
@@ -312,8 +310,8 @@ BEGIN
     where ho_group.ho_group_id = curr_group_id ;
 END
 $$
-DELIMITER ; 
-#CALL get_group_details('G00001');
+-- DELIMITER ; 
+-- #CALL get_group_details('G00001');
 
 
 #getting group_requests for admin approval 
@@ -325,8 +323,8 @@ BEGIN
     WHERE group_id = in_group_id ;
 END 
 $$ 
-DELIMITER ; 
-#call get_group_requests('G00004');
+-- DELIMITER ; 
+-- #call get_group_requests('G00004');
 
 
 DELIMITER $$ 
@@ -379,26 +377,22 @@ BEGIN
     FROM ho_group
     WHERE admin_name = deleted_user;
 
-    -- If the deleted user was an admin
     IF admin_group_id IS NOT NULL THEN
-        -- Find the person who has been in the group for the longest time
         SELECT username INTO longest_member
         FROM user_groups
         WHERE group_id = admin_group_id
         ORDER BY date_joined
         LIMIT 1;
-        -- select 1 as result;
-        -- Update the group admin name
+
         UPDATE ho_group
         SET admin_name = longest_member
         WHERE ho_group_id = admin_group_id;
 
-        -- Check the member count in the group
         SELECT COUNT(*) INTO member_count
         FROM user_groups
         WHERE group_id = admin_group_id;
         -- commit;
-        -- If there are no members left in the group, delete the group
+
         IF member_count = 0 THEN
             DELETE FROM ho_group WHERE ho_group_id = admin_group_id;
         END IF;
@@ -486,7 +480,7 @@ CREATE TRIGGER update_member_count
 AFTER INSERT ON user_groups
 FOR EACH ROW
 BEGIN
-    -- Increment the member_count for the corresponding group
+   
     UPDATE ho_group
     SET member_count = member_count + 1
     WHERE ho_group_id = NEW.group_id;
@@ -499,7 +493,7 @@ CREATE TRIGGER delete_member_count
 AFTER DELETE ON user_groups
 FOR EACH ROW
 BEGIN
-    -- Decrement the member_count for the corresponding group
+
     UPDATE ho_group
     SET member_count = member_count - 1
     WHERE ho_group_id = OLD.group_id;
@@ -518,5 +512,5 @@ END;
 $$
 DELIMITER ;
 
-select hashkey from users where username = 'disha';
-call UpdateGroupAdminAndDeleteGroup('jonedoe');
+-- select hashkey from users where username = 'otis';
+-- call UpdateGroupAdminAndDeleteGroup('jonedoe');
