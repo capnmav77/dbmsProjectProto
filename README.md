@@ -1,35 +1,32 @@
-# Project Name
-HANG_Out
+# HangOut
 
-a project where you and your mates can make plans to hang out and boost your social times together!
+Welcome to Hang_out! This is a web application built with streamlit and mysql.
 
-## Table of Contents
+## Getting Started
 
-- [Description](#description)
-- [Installation](#installation)
-<!-- - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license) -->
+To get started with Hang_out, follow these steps:
 
-## Description
+1. Clone the repository to your local machine:
 
-A detailed description of the project, including its purpose and features.
+   ```bash
+   git clone https://github.com/capnmav77/dbmsProjectProto.git
+   ```
 
-## Installation
+2. Start the development server:
 
-run git clone https://github.com/capnmav77/dbmsProjectProto.git -->
-and then just install the required dependencies
+   ```bash
+   open mysql workbench or use mysql command line in order to create a database the sql file in ./database files
+   ```
 
-run : streamlit run Home.py
-
-<!-- ## Usage
+3. change the necessary user credentials in order to login to the database:
 
 
-## Contributing
+4. Run the streamlit app:
 
-Guidelines for contributing to the project, including how to submit pull requests and report issues.
+   ```bash
+   streamlit run home.py
+   ```
 
-## License
+5. Open your web browser and navigate to http://localhost:3000 to view the application.
 
-Information about the project's license and any usage restrictions. -->
-s
+That's it! You should now be able to view and interact with Hang_out in your web browser. If you have any issues or questions, please refer to the project documentation or reach out to the project maintainers.
