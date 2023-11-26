@@ -15,11 +15,25 @@ To get started with Hang_out, follow these steps:
 2. Start the development server:
 
    ```bash
-   open mysql workbench or use mysql command line in order to create a database the sql file in ./database files
+   open mysql workbench or use mysql command line
+   in order to create a database the sql file in ./database files
    ```
 
 3. change the necessary user credentials in order to login to the database:
-
+   ```bash
+   def connect_to_database():
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="Your User Name here",
+            password="Your Password Here",
+            database="hang_out"
+        )
+        return connection
+    except Error as e:
+        st.error(f"Error: {e}")
+        return None
+   ```
 
 4. Run the streamlit app:
 
